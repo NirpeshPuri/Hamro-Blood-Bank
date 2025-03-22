@@ -53,3 +53,18 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/donor/dashboard', [UserController::class, 'donorDashboard'])->name('donor.dashboard');
 });
 
+Route::get('/search_blood', function () {
+    return view('search_blood');
+});
+
+
+use App\Http\Controllers\BloodSearchController;
+
+// Route for the search page
+Route::get('/search-blood', [BloodSearchController::class, 'index'])->name('search.blood')->middleware('auth');;
+
+// Route to find nearby admins (AJAX)
+Route::post('/find-nearby-admins', [BloodSearchController::class, 'findNearbyAdmins'])->name('find.nearby.admins');
+
+// Route to submit a blood request (AJAX)
+Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.request');

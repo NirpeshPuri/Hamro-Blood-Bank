@@ -1,4 +1,4 @@
-@extends('layouts.frontend_master')
+@extends('layouts.receiver_master')
 @section('title', 'About_us')
 @section('content')
     <style>

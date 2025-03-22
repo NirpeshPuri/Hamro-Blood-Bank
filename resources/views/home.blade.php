@@ -1,4 +1,4 @@
-@extends('layouts.frontend_master')
+@extends('layouts.receiver_master')
 @section('title', 'Home')
 @section('content')
     <!-- Hero Section -->
