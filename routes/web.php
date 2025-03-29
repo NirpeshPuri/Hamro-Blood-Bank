@@ -61,10 +61,41 @@ Route::get('/search_blood', function () {
 use App\Http\Controllers\BloodSearchController;
 
 // Route for the search page
-Route::get('/search-blood', [BloodSearchController::class, 'index'])->name('search.blood')->middleware('auth');;
+Route::get('/search-blood', [BloodSearchController::class, 'index'])->name('search.blood')->middleware('auth');
 
 // Route to find nearby admins (AJAX)
 Route::post('/find-nearby-admins', [BloodSearchController::class, 'findNearbyAdmins'])->name('find.nearby.admins');
 
 // Route to submit a blood request (AJAX)
 Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.request');
+
+// In routes/web.php
+use App\Http\Controllers\EsewaController;
+Route::get('/esewa_payment', function () {
+    return view('esewa_payment');
+});
+
+Route::post('/esewa', [EsewaController::class, 'esewaPay'])->name('esewa');
+Route::get('/success', [EsewaController::class, 'esewaPaySuccess'])->name('esewa.success');
+Route::get('/failure', [EsewaController::class, 'esewaPayFailed'])->name('esewa.failure');
+
+
+
+
+
+
+//Donor
+use App\Http\Controllers\DonorController;
+
+Route::get('/donate_blood', [DonorController::class, 'showDonationPage'])->name('donate.blood')->middleware('auth');
+
+
+
+        // Handle form submission
+        Route::post('/request', [DonorController::class, 'submitDonation'])
+            ->name('donate.blood.request');
+
+        // Find nearby blood banks
+        Route::post('/find-nearby', [DonorController::class, 'findAdminsBtn'])
+            ->name('donate.blood.find-nearby');
+

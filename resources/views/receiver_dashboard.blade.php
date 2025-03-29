@@ -6,7 +6,6 @@
         <div class="hero-content">
             <h1>Save Lives, Donate Blood</h1>
             <p>Join us in making a difference today. Your donation can save up to 3 lives.</p>
-            <a href="#donate" class="btn btn-primary">Donate Now</a>
         </div>
     </section>
 

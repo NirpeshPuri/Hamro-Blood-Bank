@@ -1,4 +1,4 @@
-@extends('layouts.receiver_master')
+@extends('layouts.login_master')
 @section('title', 'Register')
 @section('content')
     <style>
@@ -77,6 +77,8 @@
                     <button type="submit">Register</button>
                 </form>
                 <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+
+                <a href="{{ route('login') }}">Go Back</a></p>
             </div>
         </div>
     </section>

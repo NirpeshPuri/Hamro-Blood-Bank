@@ -1,4 +1,4 @@
-@extends('layouts.receiver_master')
+@extends('layouts.login_master')
 @section('title', 'Login')
 @section('content')
     <style>

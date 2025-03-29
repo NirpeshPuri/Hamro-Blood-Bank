@@ -11,22 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blood_requests', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing primary key (equivalent to INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT)
+        Schema::create('donate_bloods', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('user_id'); // Equivalent to INT(10) UNSIGNED
             $table->unsignedBigInteger('admin_id'); // Equivalent to INT(10) UNSIGNED
-            $table->string('user_name')->after('admin_id');
-            $table->string('email')->after('user_name');
-            $table->string('phone')->after('email');
-            $table->string('blood_group')->after('blood_quantity');
-            $table->integer('blood_quantity')->after('admin_id');
-            $table->enum('request_type', ['Emergency', 'Rare', 'Normal']); // ENUM column
+            $table->string('user_name');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('blood_group');
+            $table->integer('blood_quantity');// ENUM column
             $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending'); // ENUM column with default value
             $table->string('request_form', 255); // VARCHAR(255) column
-            $table->decimal('payment', 10, 2)->nullable(); // Payment column (DECIMAL with 10 digits, 2 decimal places)
-            $table->timestamps(); // created_at and updated_at timestamps
-
-            // Foreign key constraints
+            $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
         });
@@ -37,7 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blood_requests');
-
+        Schema::dropIfExists('donate_bloods');
     }
 };

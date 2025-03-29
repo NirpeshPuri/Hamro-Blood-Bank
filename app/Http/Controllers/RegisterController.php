@@ -25,7 +25,7 @@ class RegisterController extends Controller
             'blood_type' => 'required|string',
             'user_type' => 'required|in:receiver,donor',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         // Create a new user

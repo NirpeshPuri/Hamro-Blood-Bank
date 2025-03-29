@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BloodRequest extends Model
+class DonateBlood extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'admin_id', 'request_type', 'status', 'request_form','blood_quantity','blood_group', 'payment',
+        'user_id', 'admin_id', 'status', 'request_form','blood_quantity','blood_group','user_name','email','phone',
     ];
 
     // Relationship with User
