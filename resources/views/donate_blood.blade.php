@@ -173,8 +173,13 @@
             <form id="donationForm" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="adminId" name="admin_id">
-
                 <table class="form-table">
+                    <tr>
+                        <td class="label-cell"><label>Blood Bank Name:</label></td>
+                        <td>
+                            <input type="text" class="form-input" id="adminNameDisplay" name="admin_name" readonly>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="label-cell"><label>Name:</label></td>
                         <td><input type="text" class="form-input" name="user_name" value="{{ auth()->user()->name }}" readonly></td>
@@ -184,17 +189,25 @@
                         <td><input type="text" class="form-input" name="email" value="{{ auth()->user()->email }}" readonly></td>
                     </tr>
                     <tr>
+                        <td class="label-cell"><label>Age:</label></td>
+                        <td><input type="text" class="form-input" name="age" value="{{ auth()->user()->age }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell"><label>Weight:</label></td>
+                        <td><input type="text" class="form-input" name="weight" value="{{ auth()->user()->weight }}" readonly></td>
+                    </tr>
+                    <tr>
                         <td class="label-cell"><label>Phone:</label></td>
                         <td><input type="text" class="form-input" name="phone" value="{{ auth()->user()->phone }}" readonly></td>
                     </tr>
                     <tr>
                         <td class="label-cell"><label>Blood Type:</label></td>
                         <td>
-                            <input type="text" class="form-input" name="blood_type"
-                                   value="{{ auth()->user()->blood_type }}" readonly>
+                            <input type="text" class="form-input" name="blood_type_display" value="{{ auth()->user()->blood_type }}" readonly>
                             <input type="hidden" name="blood_type" value="{{ auth()->user()->blood_type }}">
                         </td>
                     </tr>
+                    <tr>
                         <td class="label-cell"><label>Units Needed:</label></td>
                         <td><input type="number" class="form-input" name="blood_quantity" min="1" max="10" required></td>
                     </tr>
@@ -219,12 +232,14 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <
     <script>
         $(document).ready(function() {
             // Find nearby blood banks
             $('#findAdminsBtn').click(function() {
                 if (navigator.geolocation) {
+                    $('#findBtnText').hide();
+                    $('#findBtnLoading').show();
+
                     navigator.geolocation.getCurrentPosition(function(position) {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
@@ -241,28 +256,44 @@
                                 $('#adminResults').show();
                                 $('#adminList').empty();
 
-                                response.forEach(function(admin) {
-                                    const listItem = $(
-                                        `<li class="admin-item">
-                                        ${admin.name} (${admin.distance.toFixed(2)} km)
-                                        <button class="select-btn" data-admin-id="${admin.id}">Select</button>
-                                    </li>`
-                                    );
-                                    $('#adminList').append(listItem);
-                                });
+                                if (response.length === 0) {
+                                    $('#noResults').show();
+                                } else {
+                                    $('#noResults').hide();
+                                    response.forEach(function(admin) {
+                                        const listItem = $(
+                                            `<li class="admin-item">
+                                                ${admin.name} (${admin.distance.toFixed(2)} km)
+                                                <button class="select-btn"
+                                                    data-admin-id="${admin.id}"
+                                                    data-admin-name="${admin.name}">
+                                                    Select
+                                                </button>
+                                            </li>`
+                                        );
+                                        $('#adminList').append(listItem);
+                                    });
 
-                                // Add click handler to all select buttons
-                                $('.select-btn').click(function() {
-                                    const adminId = $(this).data('admin-id');
-                                    selectAdmin(adminId);
-                                });
+                                    // Add click handler to all select buttons
+                                    $('.select-btn').click(function() {
+                                        const adminId = $(this).data('admin-id');
+                                        const adminName = $(this).data('admin-name');
+                                        selectAdmin(adminId, adminName);
+                                    });
+                                }
                             },
                             error: function(xhr) {
                                 console.error('AJAX error:', xhr.responseText);
                                 alert('Failed to find nearby blood banks');
+                            },
+                            complete: function() {
+                                $('#findBtnText').show();
+                                $('#findBtnLoading').hide();
                             }
                         });
                     }, function(error) {
+                        $('#findBtnText').show();
+                        $('#findBtnLoading').hide();
                         console.error('Geolocation error:', error.message);
                         alert('Error getting location: ' + error.message);
                     });
@@ -272,8 +303,9 @@
             });
 
             // Select a blood bank
-            function selectAdmin(adminId) {
+            function selectAdmin(adminId, adminName) {
                 $('#adminId').val(adminId);
+                $('#adminNameDisplay').val(adminName);
                 $('#donationFormContainer').show();
                 $('html, body').animate({
                     scrollTop: $('#donationFormContainer').offset().top - 20
@@ -284,6 +316,10 @@
             $('#donationForm').submit(function(e) {
                 e.preventDefault();
 
+                // Show loading indicator
+                $('#submitBtnText').hide();
+                $('#submitBtnLoading').show();
+
                 let formData = new FormData(this);
 
                 $.ajax({
@@ -293,13 +329,34 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        alert(response.message);
-                        $('#donationForm')[0].reset();
-                        $('#donationFormContainer').hide();
+                        $('#submitBtnText').show();
+                        $('#submitBtnLoading').hide();
+
+                        if (response.success) {
+                            alert(response.message);
+                            $('#donationForm')[0].reset();
+                            $('#donationFormContainer').hide();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
                     },
                     error: function(xhr) {
+                        $('#submitBtnText').show();
+                        $('#submitBtnLoading').hide();
+
                         console.error('Submission error:', xhr.responseText);
-                        alert('Failed to submit donation request');
+                        let errorMsg = 'Failed to submit donation request';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMsg = response.message;
+                            } else if (response.errors) {
+                                errorMsg = Object.values(response.errors).join('\n');
+                            }
+                        } catch(e) {
+                            console.error('Error parsing error response:', e);
+                        }
+                        alert(errorMsg);
                     }
                 });
             });

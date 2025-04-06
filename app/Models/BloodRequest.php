@@ -10,18 +10,40 @@ class BloodRequest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'admin_id', 'request_type', 'status', 'request_form','blood_quantity','blood_group', 'payment',
+        'user_id',
+        'admin_id',
+        'user_name',
+        'email',
+        'phone',
+        'blood_group',
+        'blood_quantity',
+        'request_type',
+        'status',
+        'request_form',
+        'payment'
     ];
 
-    // Relationship with User
+    protected $attributes = [
+        'status' => 'Pending',
+        'payment' => 0
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relationship with Admin
     public function admin()
     {
         return $this->belongsTo(Admin::class);
+    }
+    public function canEdit()
+    {
+        return strtolower($this->status) === 'pending';
+    }
+
+    public function getFileUrlAttribute()
+    {
+        return $this->request_form ? asset($this->request_form) : null;
     }
 }

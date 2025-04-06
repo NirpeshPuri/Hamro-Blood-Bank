@@ -48,7 +48,7 @@ class EsewaController extends Controller
             'request_form' => $imagePath,
             'created_at' => Carbon::now(),
         ];
-
+        BloodRequest::create($orderData);
         // Store the order data in the session
         session(['order_data' => $orderData]);
 

@@ -12,8 +12,8 @@ class CreateBloodBanksTable extends Migration
         Schema::create('blood_banks', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
             $table->foreignId('admin_id')->constrained('admins')->onDelete('cascade'); // Link to admins table
-            $table->string('blood_type', 5); // Blood type (e.g., A+, O-)
-            $table->integer('quantity'); // Quantity of blood available
+            $table->string('admin_name');
+            $table->json('blood_availability');
             $table->timestamps(); // created_at and updated_at timestamps
         });
     }

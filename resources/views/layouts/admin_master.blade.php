@@ -462,11 +462,12 @@
     <div class="container">
         <a href="#" class="logo"></a>
         <ul>
-            <li><a href="{{url('home')}}">Home</a></li>
-            <li><a href="{{url('about')}}">About Us</a></li>
-            <li><a href="{{route('donate.blood')}}">Donate Blood</a></li>
-            <li><a href="{{route('donor.status')}}">Check Status</a></li>
-            <li><a href="{{url('contact_us')}}">Contact Us</a></li>
+            <li><a href="{{url('admin_dashboard')}}">Receiver Request</a></li>
+            <li><a href="{{url('donor_request')}}">Donor Request</a></li>
+            <li><a href="{{url('blood_banks/index')}}">Blood Stock</a></li>
+            <li><a href="{{url('user_detail')}}">User Detail</a></li>
+            <li><a href="{{url('request_detail')}}">Request Details</a></li>
+            <li><a href="{{url('admin_profile')}}">Profile</a></li>
         </ul>
     </div>
 </nav>

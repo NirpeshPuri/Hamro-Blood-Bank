@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('blood_quantity');// ENUM column
             $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending'); // ENUM column with default value
             $table->string('request_form', 255); // VARCHAR(255) column
+            $table->dateTime('donation_date');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');

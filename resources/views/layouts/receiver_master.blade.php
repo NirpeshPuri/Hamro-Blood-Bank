@@ -465,7 +465,7 @@
             <li><a href="{{url('home')}}">Home</a></li>
             <li><a href="{{url('about')}}">About Us</a></li>
             <li><a href="{{url('search_blood')}}">Search for Blood</a></li>
-            <li><a href="login">Check Status</a></li>
+            <li><a href="{{route('receiver.status') }}">Check Status</a></li>
             <li><a href="{{url('contact_us')}}">Contact Us</a></li>
         </ul>
     </div>
@@ -487,10 +487,11 @@
         <!-- Quick Links -->
         <div class="footer-section">
             <h3>Quick Links</h3>
-            <p><a href="#home">Home</a></p>
-            <p><a href="#about">About Us</a></p>
-            <p><a href="#why-donate">Why Donate Blood</a></p>
-            <p><a href="#login">Login</a></p>
+            <p><a href="{{url('home')}}">Home</a></p>
+            <p><a href="{{url('about')}}">About Us</a></p>
+            <p><a href="{{url('search_blood')}}">Search for Blood</a></p>
+            <p><a href="{{route('receiver.status') }}">Check Status</a></p>
+            <p><a href="{{url('contact_us')}}">Contact Us</a></p>
         </div>
 
         <!-- Social Media Links -->

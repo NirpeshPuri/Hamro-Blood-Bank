@@ -2,45 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Admin;
 use App\Models\DonateBlood;
+use App\Models\Admin;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class DonorController extends Controller
 {
     public function showDonationPage()
     {
-        return view('donate_blood');
+        $eligibility = $this->checkEligibility(auth()->id());
+        return view('donate_blood', [
+            'isEligible' => $eligibility['eligible'],
+            'nextDonationDate' => $eligibility['next_donation_date'] ?? null
+        ]);
+    }
+
+    protected function checkEligibility($userId)
+    {
+        $lastDonation = DonateBlood::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->where('donation_date', '>=', now()->subMonths(3))
+            ->first();
+
+        return $lastDonation ? [
+            'eligible' => false,
+            'next_donation_date' => $lastDonation->donation_date->addMonths(3)
+        ] : ['eligible' => true];
     }
 
     public function findAdminsBtn(Request $request)
     {
-        $userLat = $request->input('latitude');
-        $userLng = $request->input('longitude');
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric'
+        ]);
 
-        // Fetch all admins
-        $admins = Admin::all();
+        $admins = Admin::select(['id', 'name', 'latitude', 'longitude'])->get()
+            ->map(function ($admin) use ($request) {
+                $admin->distance = $this->calculateDistance(
+                    $request->latitude,
+                    $request->longitude,
+                    $admin->latitude,
+                    $admin->longitude
+                );
+                return $admin;
+            })
+            ->sortBy('distance')
+            ->values();
 
-        // Calculate distance for each admin
-        $adminsWithDistance = $admins->map(function ($admin) use ($userLat, $userLng) {
-            $distance = $this->calculateDistance($userLat, $userLng, $admin->latitude, $admin->longitude);
-            $admin->distance = $distance;
-            return $admin;
-        });
-
-        // Sort admins by distance
-        $sortedAdmins = $adminsWithDistance->sortBy('distance');
-
-        return response()->json($sortedAdmins->values());
+        return response()->json($admins);
     }
 
-    // Function to calculate distance using Haversine formula
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 6371; // Radius of the earth in kilometers
-
+        $earthRadius = 6371;
         $latFrom = deg2rad($lat1);
         $lonFrom = deg2rad($lon1);
         $latTo = deg2rad($lat2);
@@ -56,6 +74,15 @@ class DonorController extends Controller
 
     public function submitDonation(Request $request)
     {
+        $eligibility = $this->checkEligibility(auth()->id());
+        if (!$eligibility['eligible']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only donate blood once every 3 months. Your last donation was on ' .
+                    $eligibility['next_donation_date']->subMonths(3)->format('M d, Y')
+            ], 422);
+        }
+
         $validated = $request->validate([
             'admin_id' => 'required|exists:admins,id',
             'user_name' => 'required|string|max:255',
@@ -67,38 +94,120 @@ class DonorController extends Controller
         ]);
 
         try {
-            // Handle file upload
             if ($request->hasFile('request_form')) {
-                $file = $request->file('request_form');
-                $filename = 'donation_' . time() . '_' . auth()->id() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('donor_proofs', $filename, 'public');
-                $validated['request_form'] = $path;
+                $imageName = time().'.'.$request->file('request_form')->getClientOriginalExtension();
+                $request->file('request_form')->move(public_path('assets/donor_proofs'), $imageName);
+                $validated['request_form'] = 'assets/donor_proofs/'.$imageName;
             }
 
-            // Add additional data
             $validated['user_id'] = auth()->id();
             $validated['status'] = 'pending';
+            $validated['donation_date'] = now();
 
-            // Create donation record
             DonateBlood::create($validated);
-
-            // TODO: Send notification to blood bank admin
 
             return response()->json([
                 'success' => true,
-                'message' => 'Donation request submitted successfully. The blood bank will contact you soon.'
+                'message' => 'Donation request submitted successfully.',
+                'next_donation_date' => now()->addMonths(3)->format('Y-m-d H:i:s')
             ]);
 
         } catch (\Exception $e) {
             Log::error('Donation submission error: ' . $e->getMessage());
-
-            // Delete uploaded file if error occurred
-            if (isset($path)){ Storage::disk('public')->delete($path);}
-
             return response()->json([
                 'success' => false,
-                'message' => 'Error submitting donation request. Please try again.'
+                'message' => 'Error submitting donation request: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function status()
+    {
+        $donations = DonateBlood::with('admin')
+            ->where('user_id', auth()->id())
+            ->latest('donation_date')
+            ->get();
+
+        $eligibility = $this->checkEligibility(auth()->id());
+
+        return view('donor_status', compact('donations', 'eligibility'));
+    }
+
+    public function edit($id)
+    {
+        $donation = DonateBlood::with('admin')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        abort_unless($donation->canEdit(), 403, 'Cannot edit completed or cancelled donations');
+
+        return view('edit_donation', [
+            'donation' => $donation,
+            'currentFileUrl' => $donation->file_url
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $donation = DonateBlood::where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        abort_unless($donation->canEdit(), 403, 'Cannot update this donation');
+
+        $validated = $request->validate([
+            'blood_quantity' => 'required|integer|min:1|max:10',
+            'request_form' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+        ]);
+
+        try {
+            if ($request->hasFile('request_form')) {
+                if ($donation->request_form && file_exists(public_path($donation->request_form))) {
+                    File::delete(public_path($donation->request_form));
+                }
+
+                $file = $request->file('request_form');
+                $fileName = 'donation_'.time().'_'.auth()->id().'.'.$file->getClientOriginalExtension();
+                $file->move(public_path('assets/donor_proofs'), $fileName);
+                $validated['request_form'] = 'assets/donor_proofs/'.$fileName;
+            }
+
+            $donation->update($validated);
+            return redirect()->route('donor.status')->with('success', 'Donation updated successfully');
+
+        } catch (\Exception $e) {
+            Log::error("Donation update failed: ".$e->getMessage());
+            return back()->with('error', 'Failed to update donation');
+        }
+    }
+
+    public function destroy(DonateBlood $donation)
+    {
+        // Authorization check - ensure user owns this donation
+        if ($donation->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Only allow deletion of pending donations
+        if ($donation->status !== 'pending') {
+            return redirect()->route('donor.status')
+                ->with('error', 'Only pending donations can be deleted');
+        }
+
+        try {
+            // Delete associated file if exists
+            if ($donation->request_form && file_exists(public_path($donation->request_form))) {
+                unlink(public_path($donation->request_form));
+            }
+
+            $donation->delete();
+
+            return redirect()->route('donor.status')
+                ->with('success', 'Donation request deleted successfully');
+
+        } catch (\Exception $e) {
+            Log::error('Donation deletion failed: ' . $e->getMessage());
+            return redirect()->route('donor.status')
+                ->with('error', 'Failed to delete donation: ' . $e->getMessage());
         }
     }
 }

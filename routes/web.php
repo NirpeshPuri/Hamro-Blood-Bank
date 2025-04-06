@@ -5,21 +5,33 @@ use App\Http\Controllers\ContactController;
 
 // Homepage and Static Pages
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Route::get('/home', function () {
-    return view('home');
-});
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    switch (auth()->user()->user_type) {
+        case 'admin':
+            return redirect()->route('admin.dashboard');
+        case 'donor':
+            return redirect()->route('donor.dashboard');
+        case 'receiver':
+            return redirect()->route('receiver.dashboard');
+        default:
+            return redirect()->route('login')->with('error', 'Unknown user type');
+    }
+})->middleware('auth');
 
 Route::get('/about', function () {
-    return view('about');
-});
-
+    return view('about'); // Same content for all
+})->name('about');
+// Display contact form
 Route::get('/contact_us', function () {
-    return view('contact_us');
-});
-
+    return view('contact_us'); // Same content for all
+})->name('contact_us');
 // Contact Form Submission
 Route::post('/submit-contact-form', [ContactController::class, 'submitForm']);
 
@@ -67,7 +79,7 @@ Route::get('/search-blood', [BloodSearchController::class, 'index'])->name('sear
 Route::post('/find-nearby-admins', [BloodSearchController::class, 'findNearbyAdmins'])->name('find.nearby.admins');
 
 // Route to submit a blood request (AJAX)
-Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.request');
+Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.blood.request');
 
 // In routes/web.php
 use App\Http\Controllers\EsewaController;
@@ -79,23 +91,51 @@ Route::post('/esewa', [EsewaController::class, 'esewaPay'])->name('esewa');
 Route::get('/success', [EsewaController::class, 'esewaPaySuccess'])->name('esewa.success');
 Route::get('/failure', [EsewaController::class, 'esewaPayFailed'])->name('esewa.failure');
 
+// routes/web.php
+
+use App\Http\Controllers\ReceiverStatusController;
+
+Route::middleware(['auth'])->group(function () {
+    // Receiver status routes
+    Route::get('/receiver/status', [ReceiverStatusController::class, 'index'])
+        ->name('receiver.status');
+    Route::get('/receiver/request/{id}/edit', [ReceiverStatusController::class, 'edit'])
+        ->name('receiver.request.edit');
+    Route::put('/receiver/request/{id}', [ReceiverStatusController::class, 'update'])
+        ->name('receiver.request.update');
+    Route::delete('/receiver/request/{id}', [ReceiverStatusController::class, 'destroy'])
+        ->name('receiver.request.destroy');
+});
 
 
 
 
 
 //Donor
+
 use App\Http\Controllers\DonorController;
+Route::get('/donor_status', [DonorController::class, 'status'])->name('donate.blood')->middleware('auth');
+Route::get('/edit_donation', [DonorController::class, 'edit'])->name('edit.donate.blood')->middleware('auth');
+Route::middleware(['auth'])->prefix('donor')->group(function () {
+    // Donation request
+    Route::get('/donate', [DonorController::class, 'showDonationPage'])->name('donate.blood');
+    Route::post('/find-nearby', [DonorController::class, 'findAdminsBtn'])->name('donate.blood.find-nearby');
+    Route::post('/request', [DonorController::class, 'submitDonation'])->name('donate.blood.request');
 
-Route::get('/donate_blood', [DonorController::class, 'showDonationPage'])->name('donate.blood')->middleware('auth');
+    // Donation status
+    Route::get('/donor_status', [DonorController::class, 'status'])->name('donor.status');
+    Route::get('/edit_donation/{id}/edit', [DonorController::class, 'edit'])->name('donor.donation.edit');
+    Route::put('/donation/{id}', [DonorController::class, 'update'])->name('donor.donation.update');
+    Route::delete('/donor/donations/{donation}', [DonorController::class, 'destroy'])
+        ->name('donor.donations.destroy');});
 
 
 
-        // Handle form submission
-        Route::post('/request', [DonorController::class, 'submitDonation'])
-            ->name('donate.blood.request');
 
-        // Find nearby blood banks
-        Route::post('/find-nearby', [DonorController::class, 'findAdminsBtn'])
-            ->name('donate.blood.find-nearby');
+use App\Http\Controllers\BloodBankController;
 
+Route::resource('blood-banks', BloodBankController::class)->except(['create', 'edit']);
+
+// Optional: If you want separate routes for create/edit
+Route::get('/blood-banks/create', [BloodBankController::class, 'create'])->name('blood-banks.create');
+Route::get('/blood-banks/{bloodBank}/edit', [BloodBankController::class, 'edit'])->name('blood-banks.edit');

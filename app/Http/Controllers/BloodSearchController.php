@@ -2,46 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\BloodRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BloodSearchController extends Controller
 {
-    // Show the search page
     public function index()
     {
-        return view('search_blood'); // Updated to match the blade file name
+        return view('search_blood');
     }
 
-    // Find nearby admins using an algorithm
     public function findNearbyAdmins(Request $request)
     {
-        $userLat = $request->input('latitude');
-        $userLng = $request->input('longitude');
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric'
+        ]);
 
-        // Fetch all admins
-        $admins = Admin::all();
+        $admins = Admin::select(['id', 'name', 'latitude', 'longitude'])->get();
 
-        // Calculate distance for each admin
-        $adminsWithDistance = $admins->map(function ($admin) use ($userLat, $userLng) {
-            $distance = $this->calculateDistance($userLat, $userLng, $admin->latitude, $admin->longitude);
-            $admin->distance = $distance;
+        $adminsWithDistance = $admins->map(function ($admin) use ($request) {
+            $admin->distance = $this->calculateDistance(
+                $request->latitude,
+                $request->longitude,
+                $admin->latitude,
+                $admin->longitude
+            );
             return $admin;
         });
 
-        // Sort admins by distance
-        $sortedAdmins = $adminsWithDistance->sortBy('distance');
-
-        return response()->json($sortedAdmins->values());
+        return response()->json($adminsWithDistance->sortBy('distance')->values());
     }
 
-    // Function to calculate distance using Haversine formula
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $earthRadius = 6371; // Radius of the earth in kilometers
-
+        $earthRadius = 6371;
         $latFrom = deg2rad($lat1);
         $lonFrom = deg2rad($lon1);
         $latTo = deg2rad($lat2);
@@ -55,7 +52,6 @@ class BloodSearchController extends Controller
         return $angle * $earthRadius;
     }
 
-    // Submit request to the nearest admin
     public function submitRequest(Request $request)
     {
         $request->validate([
@@ -64,28 +60,41 @@ class BloodSearchController extends Controller
             'blood_quantity' => 'required|integer|min:1',
             'request_type' => 'required|in:Emergency,Rare,Normal',
             'request_form' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'payment_amount' => 'required|numeric',
+            'payment' => 'required|numeric|min:0',
         ]);
 
-        // Handle file upload
-        if ($request->hasFile('request_form')) {
-            $image = $request->file('request_form');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/request_forms', $imageName); // Save the image in the storage folder
-            $imagePath = 'request_forms/' . $imageName; // Path to store in the database
-        }
+        $user = Auth::user();
+        //$imagePath = $request->file('request_form')->store('request_forms', 'public');
 
-        // Store the request with user details and image path
-        BloodRequest::create([
-            'user_id' => Auth::id(), // Store the authenticated user's ID
+        $imageName = time().'.'.$request->file('request_form')->getClientOriginalExtension();
+        $request->file('request_form')->move(public_path('assets/request_forms'), $imageName);
+        $imagePath = 'assets/request_forms/'.$imageName;
+
+        $bloodRequest = BloodRequest::create([
+            'user_id' => $user->id,
             'admin_id' => $request->admin_id,
+            'user_name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
             'blood_group' => $request->blood_group,
             'blood_quantity' => $request->blood_quantity,
             'request_type' => $request->request_type,
             'request_form' => $imagePath,
-            'payment' => $request->payment_amount, // Store payment amount
+            'payment' => $request->payment,
         ]);
 
-        return response()->json(['message' => 'Request submitted successfully!']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Blood request submitted successfully!',
+            'request_id' => $bloodRequest->id,
+            'payment' => $bloodRequest->payment
+        ]);
+    }
+
+    private function storeRequestForm($file)
+    {
+        $imageName = time() . '.' . $file->getClientOriginalExtension();
+        $file->storeAs('public/request_forms', $imageName);
+        return 'request_forms/' . $imageName;
     }
 }

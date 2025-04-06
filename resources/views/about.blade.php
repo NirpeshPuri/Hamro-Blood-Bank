@@ -79,6 +79,7 @@
             color: #666;
         }
     </style>
+
     <!-- About Section -->
     <section class="about-section fade-in">
         <div class="container">

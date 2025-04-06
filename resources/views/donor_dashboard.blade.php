@@ -6,7 +6,7 @@
         <div class="hero-content">
             <h1>Save Lives, Donate Blood</h1>
             <p>Join us in making a difference today. Your donation can save up to 3 lives.</p>
-            <a href="{{url('donate_blood')}}">Donate Blood</a>
+            <a href="{{url('donate_blood')}}" class="donate-blood-link">Donate Blood</a>
         </div>
     </section>
 
@@ -73,4 +73,20 @@
             </div>
         </div>
     </section>
+    <style>
+        .donate-blood-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff4757;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+
+        .donate-blood-link:hover {
+            background-color: #e84118;
+        }
+    </style>
 @endsection
