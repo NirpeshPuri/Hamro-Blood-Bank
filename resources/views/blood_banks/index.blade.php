@@ -1,6 +1,9 @@
-@extends('layouts.app')
+<!-- resources/views/blood_banks/index.blade.php -->
 
+@extends('layouts.admin_master')
+@section('title', 'Blood Banks')
 @section('content')
+
     <div class="container">
         <h1>Blood Banks</h1>
         <a href="{{ route('blood-banks.create') }}" class="btn btn-primary mb-3">Create New Blood Bank</a>
@@ -22,7 +25,7 @@
                     <td>
                         @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
                             @if($bloodBank->$type > 0)
-                                <span class="badge bg-primary">{{ $type }}: {{ $bloodBank->$type }}</span>
+                                <span class="badge bg-danger">{{ $type }}: {{ $bloodBank->$type }}</span>
                             @endif
                         @endforeach
                     </td>

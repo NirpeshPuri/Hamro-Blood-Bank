@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class BloodBank extends Model
 {
@@ -12,24 +12,15 @@ class BloodBank extends Model
     protected $fillable = [
         'admin_id',
         'admin_name',
-        'A+',
-        'A-',
-        'B+',
-        'B-',
-        'AB+',
-        'AB-',
-        'O+',
-        'O-'
+        'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
     ];
 
-    // Relationship with Admin (optional)
     public function admin()
     {
         return $this->belongsTo(Admin::class);
     }
 
-    // Default blood availability structure
-    public function updateBloodStock($bloodType, $quantity)
+    public function updateStock($bloodType, $quantity)
     {
         if ($quantity < 0 && abs($quantity) > $this->$bloodType) {
             return false; // Not enough blood to deduct
@@ -40,17 +31,17 @@ class BloodBank extends Model
         return true;
     }
 
-    public function getAvailableBloodTypes()
+    public static function currentAdminBank()
     {
-        $types = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-        $available = [];
+        $admin = Auth::guard('admin')->user();
 
-        foreach ($types as $type) {
-            if ($this->$type > 0) {
-                $available[$type] = $this->$type;
-            }
+        if (!$admin) {
+            abort(403, 'Unauthorized - Admin not logged in');
         }
 
-        return $available;
+        return self::firstOrCreate(
+            ['admin_id' => $admin->id],
+            ['admin_name' => $admin->name ?? 'Admin']
+        );
     }
 }

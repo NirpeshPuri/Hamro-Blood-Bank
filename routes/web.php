@@ -150,10 +150,16 @@ Route::middleware(['auth'])->prefix('donor')->group(function () {
 
 
 
+// routes/web.php
+
+// routes/web.php
+
+// routes/web.php
+
 use App\Http\Controllers\BloodBankController;
 
-Route::resource('blood-banks', BloodBankController::class)->except(['create', 'edit']);
-
-// Optional: If you want separate routes for create/edit
-Route::get('/blood-banks/create', [BloodBankController::class, 'create'])->name('blood-banks.create');
-Route::get('/blood-banks/{bloodBank}/edit', [BloodBankController::class, 'edit'])->name('blood-banks.edit');
+Route::prefix('blood-banks')->middleware('auth:admin')->group(function () {
+    Route::get('/', [BloodBankController::class, 'show'])->name('blood-banks.show');
+    Route::get('/update-stock', [BloodBankController::class, 'updateStockForm'])->name('blood-banks.update-form');
+    Route::post('/update-stock', [BloodBankController::class, 'updateStock'])->name('blood-banks.update');
+});

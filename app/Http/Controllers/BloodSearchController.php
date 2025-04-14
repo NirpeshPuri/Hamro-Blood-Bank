@@ -97,4 +97,5 @@ class BloodSearchController extends Controller
         $file->storeAs('public/request_forms', $imageName);
         return 'request_forms/' . $imageName;
     }
+
 }
