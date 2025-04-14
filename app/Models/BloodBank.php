@@ -12,11 +12,14 @@ class BloodBank extends Model
     protected $fillable = [
         'admin_id',
         'admin_name',
-        'blood_availability'
-    ];
-
-    protected $casts = [
-        'blood_availability' => 'array'
+        'A+',
+        'A-',
+        'B+',
+        'B-',
+        'AB+',
+        'AB-',
+        'O+',
+        'O-'
     ];
 
     // Relationship with Admin (optional)
@@ -26,17 +29,28 @@ class BloodBank extends Model
     }
 
     // Default blood availability structure
-    protected static function boot()
+    public function updateBloodStock($bloodType, $quantity)
     {
-        parent::boot();
+        if ($quantity < 0 && abs($quantity) > $this->$bloodType) {
+            return false; // Not enough blood to deduct
+        }
 
-        static::creating(function ($model) {
-            $model->blood_availability = $model->blood_availability ?? [
-                'A+' => 0, 'A-' => 0,
-                'B+' => 0, 'B-' => 0,
-                'AB+' => 0, 'AB-' => 0,
-                'O+' => 0, 'O-' => 0
-            ];
-        });
+        $this->$bloodType += $quantity;
+        $this->save();
+        return true;
+    }
+
+    public function getAvailableBloodTypes()
+    {
+        $types = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        $available = [];
+
+        foreach ($types as $type) {
+            if ($this->$type > 0) {
+                $available[$type] = $this->$type;
+            }
+        }
+
+        return $available;
     }
 }

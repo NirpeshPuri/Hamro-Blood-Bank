@@ -1,54 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Blood Bank Details</h4>
-            </div>
+    <div class="container">
+        <h1>Blood Bank Details</h1>
 
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ $bloodBank->admin_name }}'s Blood Bank</h2>
+            </div>
             <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <p><strong>ID:</strong> {{ $bloodBank->id }}</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Admin ID:</strong> {{ $bloodBank->admin_id }}</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Admin Name:</strong> {{ $bloodBank->admin_name }}</p>
-                    </div>
+                <h3 class="card-title">Blood Stock</h3>
+                <div class="row">
+                    @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
+                        <div class="col-md-3 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-danger text-white">
+                                    {{ $type }}
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ $bloodBank->$type }} units</h4>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
-                <h5 class="mb-3">Blood Stock Availability</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="thead-light">
-                        <tr>
-                            <th>Blood Type</th>
-                            <th>Units Available</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($bloodBank->blood_availability as $type => $units)
-                            <tr>
-                                <td>{{ $type }}</td>
-                                <td>{{ $units }}</td>
-                                <td class="{{ $units > 0 ? 'text-success' : 'text-danger' }}">
-                                    {{ $units > 0 ? 'Available' : 'Not Available' }}
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                <a href="{{ route('blood-banks.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
+                <a href="{{ route('blood-banks.update-stock-form', $bloodBank) }}" class="btn btn-primary">Update Stock</a>
+                <a href="{{ route('blood-banks.edit', $bloodBank) }}" class="btn btn-warning">Edit</a>
+                <a href="{{ route('blood-banks.index') }}" class="btn btn-secondary">Back</a>
             </div>
         </div>
     </div>

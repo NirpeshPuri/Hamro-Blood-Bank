@@ -566,7 +566,7 @@
                         <span>{{ Auth::user()->name }}</span>
                     </button>
                     <div class="dropdown-content">
-                        <a href="">Update Profile</a>
+                        <a href="{{ route('profile.update') }}">Update Profile</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST">
                             @csrf
                             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

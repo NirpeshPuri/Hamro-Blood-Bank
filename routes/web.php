@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileUpdateController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 
@@ -111,6 +112,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('receiver.request.update');
     Route::delete('/receiver/request/{id}', [ReceiverStatusController::class, 'destroy'])
         ->name('receiver.request.destroy');
+
+    Route::get('/receiver_update_profile', [ProfileUpdateController::class, 'showUpdateForm1'])->name('receiver.profile.update');
+    Route::post('/receiver_update_profile', [ProfileUpdateController::class, 'update']);
+// routes/web.php
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 
@@ -134,6 +140,9 @@ Route::middleware(['auth'])->prefix('donor')->group(function () {
     Route::put('/donation/{id}', [DonorController::class, 'update'])->name('donor.donation.update');
     Route::delete('/donor/donations/{donation}', [DonorController::class, 'destroy'])
         ->name('donor.donations.destroy');
+
+    Route::get('/donor_update_profile', [ProfileUpdateController::class, 'showUpdateForm'])->name('profile.update');
+    Route::post('/donor_update_profile', [ProfileUpdateController::class, 'update']);
 // routes/web.php
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });

@@ -153,40 +153,53 @@
             <h2>Our Branches</h2>
             <div class="branch-list">
                 <div class="branch">
-                    <h3>Kathmandu Branch</h3>
-                    <p>Location: New Road, Kathmandu</p>
-                    <p>Phone: +977 123-456-7890</p>
-                    <p>Email: kathmandu@hamrobloodbank.com</p>
+                    <h3>Chabahil Blood Bank</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Chabahil, Kathmandu</p>
+                    <p><i class="fas fa-phone"></i> 9800000001</p>
+                    <p><i class="fas fa-envelope"></i> chabahil@gmail.com</p>
+                    <div class="branch-coordinates">
+                        <small>Coordinates: 27.71857882, 85.34833882</small>
+                    </div>
                 </div>
+
                 <div class="branch">
-                    <h3>Pokhara Branch</h3>
-                    <p>Location: Lakeside, Pokhara</p>
-                    <p>Phone: +977 123-456-7891</p>
-                    <p>Email: pokhara@hamrobloodbank.com</p>
+                    <h3>Exhibition Blood Bank</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Exhibition Road, Kathmandu</p>
+                    <p><i class="fas fa-phone"></i> 9800000002</p>
+                    <p><i class="fas fa-envelope"></i> exhibition@gmail.com</p>
+                    <div class="branch-coordinates">
+                        <small>Coordinates: 27.70211487, 85.32002475</small>
+                    </div>
                 </div>
+
                 <div class="branch">
-                    <h3>Chitwan Branch</h3>
-                    <p>Location: Narayangarh, Chitwan</p>
-                    <p>Phone: +977 123-456-7892</p>
-                    <p>Email: chitwan@hamrobloodbank.com</p>
+                    <h3>Soaltee Mod Blood Bank</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Himalayan Heights, Soaltee Mod</p>
+                    <p><i class="fas fa-phone"></i> 9800000003</p>
+                    <p><i class="fas fa-envelope"></i> soalteemod@gmail.com</p>
+                    <div class="branch-coordinates">
+                        <small>Coordinates: 27.69914224, 85.29062838</small>
+                    </div>
                 </div>
+
                 <div class="branch">
-                    <h3>Biratnagar Branch</h3>
-                    <p>Location: Adarsh Chowk, Biratnagar</p>
-                    <p>Phone: +977 123-456-7893</p>
-                    <p>Email: biratnagar@hamrobloodbank.com</p>
+                    <h3>Lalitpur Blood Bank</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Pulchowk Rd, Lalitpur</p>
+                    <p><i class="fas fa-phone"></i> 9800000004</p>
+                    <p><i class="fas fa-envelope"></i> lalitpur@gmail.com</p>
+                    <div class="branch-coordinates">
+                        <small>Coordinates: 27.67557246, 85.31288775</small>
+                    </div>
                 </div>
+
                 <div class="branch">
-                    <h3>Butwal Branch</h3>
-                    <p>Location: Traffic Chowk, Butwal</p>
-                    <p>Phone: +977 123-456-7894</p>
-                    <p>Email: butwal@hamrobloodbank.com</p>
-                </div>
-                <div class="branch">
-                    <h3>Dharan Branch</h3>
-                    <p>Location: Bhanu Chowk, Dharan</p>
-                    <p>Phone: +977 123-456-7895</p>
-                    <p>Email: dharan@hamrobloodbank.com</p>
+                    <h3>Kantipur Blood Bank</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Shri Ganesh Marg, Kathmandu</p>
+                    <p><i class="fas fa-phone"></i> 9800000005</p>
+                    <p><i class="fas fa-envelope"></i> kantipur@gmail.com</p>
+                    <div class="branch-coordinates">
+                        <small>Coordinates: 27.68568049, 85.34503177</small>
+                    </div>
                 </div>
             </div>
         </div>

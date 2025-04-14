@@ -15,15 +15,15 @@
             <h2>Our Impact</h2>
             <div class="stats">
                 <div class="stat">
-                    <h3>10,000+</h3>
+                    <h3>1000+</h3>
                     <p>Lives Saved</p>
                 </div>
                 <div class="stat">
-                    <h3>5,000+</h3>
+                    <h3>500+</h3>
                     <p>Donors Registered</p>
                 </div>
                 <div class="stat">
-                    <h3>100+</h3>
+                    <h3>5</h3>
                     <p>Hospitals Supported</p>
                 </div>
             </div>

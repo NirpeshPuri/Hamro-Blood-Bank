@@ -13,7 +13,14 @@ class CreateBloodBanksTable extends Migration
             $table->id(); // Auto-incrementing primary key
             $table->foreignId('admin_id')->constrained('admins')->onDelete('cascade'); // Link to admins table
             $table->string('admin_name');
-            $table->json('blood_availability');
+            $table->integer('A+')->default(0);
+            $table->integer('A-')->default(0);
+            $table->integer('B+')->default(0);
+            $table->integer('B-')->default(0);
+            $table->integer('AB+')->default(0);
+            $table->integer('AB-')->default(0);
+            $table->integer('O+')->default(0);
+            $table->integer('O-')->default(0);
             $table->timestamps(); // created_at and updated_at timestamps
         });
     }
