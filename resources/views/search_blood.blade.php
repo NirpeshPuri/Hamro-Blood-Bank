@@ -261,7 +261,7 @@
                     <tr>
                         <td><label for="blood_quantity">Blood Quantity (Units):</label></td>
                         <td>
-                            <input type="number" id="blood_quantity" name="blood_quantity" min="1" required>
+                            <input type="number" id="blood_quantity" name="blood_quantity" min="1" max="2" required>
                         </td>
                     </tr>
 
@@ -279,7 +279,7 @@
                     <tr>
                         <td><label for="payment">Payment Amount (NPR):</label></td>
                         <td>
-                            <input type="number" id="payment" name="payment" min="0" step="0.01" required>
+                            <input type="number" id="payment" name="payment" min="0" max="1500" step="0.01" required>
                         </td>
                     </tr>
 
@@ -305,8 +305,8 @@
         // Find nearby admins
         $('#findNearbyAdmins').click(function() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const latitude = position.coords.latitude;
+                navigator.geolocation.getCurrentPosition(function(position) {   // Browser requests location permission
+                    const latitude = position.coords.latitude;  // Gets user's latitude/longitude
                     const longitude = position.coords.longitude;
 
                     $.ajax({

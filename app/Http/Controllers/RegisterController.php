@@ -17,19 +17,26 @@ class RegisterController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'name' => 'required|string|max:255',
-            'age' => 'required|integer|min:18',
-            'weight' => 'required|numeric|min:30',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
-            'blood_type' => 'required|string',
-            'user_type' => 'required|in:receiver,donor',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'name' => ['required', 'regex:/^[A-Za-z]+[A-Za-z0-9]*$/', 'max:25'],
+            'age' => ['required', 'integer', 'min:16','max:65'],
+            'weight' => ['required', 'numeric', 'min:45', 'max:160'],
+            'address' => ['required', 'regex:/^[A-Za-z0-9\s,\'.-]+$/', 'regex:/[A-Za-z]/', 'max:30'],
+            'phone' => ['required', 'digits:10'],
+            'blood_type' => ['required', 'string'],
+            'user_type' => ['required', 'in:receiver,donor'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'name.regex' => 'Name must start with letters and may end with numbers.',
+            'age.min' => 'Age must be between 16 and 65.',
+            'weight.min' => 'Weight must be at least 45 kg and maximum 160 kg.',
+            'address.regex' => 'Address must contain alphabets and can include numbers, spaces, commas, apostrophes, and hyphens.',
+            'phone.digits' => 'Phone number must be exactly 10 digits.',
+            'email.email' => 'Please enter a valid email address.',
         ]);
-
+        
         // Create a new user
-        User::create([
+         User::create([
             'name' => $request->name,
             'age' => $request->age,
             'weight' => $request->weight,
@@ -40,8 +47,8 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
         // Redirect to login page with success message
         return redirect()->route('login')->with('success', 'Registration successful! Please login.');
     }
 }
+

@@ -28,10 +28,16 @@ Route::get('/home', function () {
 Route::get('/about', function () {
     return view('about'); // Same content for all
 })->name('about');
+Route::get('/donor_about', function () {
+    return view('donor_about'); // Same content for all
+})->name('donor_about');
 // Display contact form
 Route::get('/contact_us', function () {
     return view('contact_us'); // Same content for all
 })->name('contact_us');
+Route::get('/donor_contact_us', function () {
+    return view('donor_contact_us'); // Same content for all
+})->name('donor_contact_us');
 // Contact Form Submission
 Route::post('/submit-contact-form', [ContactController::class, 'submitForm']);
 
@@ -121,13 +127,16 @@ Route::middleware(['auth'])->prefix('donor')->group(function () {
     Route::get('/donate', [DonorController::class, 'showDonationPage'])->name('donate.blood');
     Route::post('/find-nearby', [DonorController::class, 'findAdminsBtn'])->name('donate.blood.find-nearby');
     Route::post('/request', [DonorController::class, 'submitDonation'])->name('donate.blood.request');
-
+    Route::get('/check-eligibility', [DonorController::class, 'checkEligibility'])->name('donate.blood.check-eligibility');
     // Donation status
     Route::get('/donor_status', [DonorController::class, 'status'])->name('donor.status');
     Route::get('/edit_donation/{id}/edit', [DonorController::class, 'edit'])->name('donor.donation.edit');
     Route::put('/donation/{id}', [DonorController::class, 'update'])->name('donor.donation.update');
     Route::delete('/donor/donations/{donation}', [DonorController::class, 'destroy'])
-        ->name('donor.donations.destroy');});
+        ->name('donor.donations.destroy');
+// routes/web.php
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
 
 
 

@@ -42,22 +42,72 @@
             background: #ff6b6b;
             transform: translateY(-3px);
         }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
     </style>
 
     <section class="login-section fade-in">
         <div class="container">
             <h2>Login</h2>
             <div class="login-form">
+                <!-- Error Message Container -->
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
-                    <input type="email" name="email" placeholder="Email Address" required>
-                    <input type="password" name="password" placeholder="Password" required>
-                    <select name="user_type" required>
-                        <option value="">Select User Type</option>
-                        <option value="receiver">Receiver</option>
-                        <option value="donor">Donor</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Email Address"
+                               value="{{ old('email') }}"
+                               class="@error('email') is-invalid @enderror" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password" placeholder="Password"
+                               class="@error('password') is-invalid @enderror" required>
+                    </div>
+
+                    <div class="form-group">
+                        <select name="user_type" class="@error('user_type') is-invalid @enderror" required>
+                            <option value="">Select User Type</option>
+                            <option value="receiver" {{ old('user_type') == 'receiver' ? 'selected' : '' }}>Receiver</option>
+                            <option value="donor" {{ old('user_type') == 'donor' ? 'selected' : '' }}>Donor</option>
+                            <option value="admin" {{ old('user_type') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        </select>
+                    </div>
+
                     <button type="submit">Login</button>
                 </form>
                 <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>

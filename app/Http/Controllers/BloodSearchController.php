@@ -24,7 +24,7 @@ class BloodSearchController extends Controller
         $admins = Admin::select(['id', 'name', 'latitude', 'longitude'])->get();
 
         $adminsWithDistance = $admins->map(function ($admin) use ($request) {
-            $admin->distance = $this->calculateDistance(
+            $admin->distance = $this->calculateDistance( // Calculate distance for each
                 $request->latitude,
                 $request->longitude,
                 $admin->latitude,
@@ -57,10 +57,10 @@ class BloodSearchController extends Controller
         $request->validate([
             'admin_id' => 'required|exists:admins,id',
             'blood_group' => 'required|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
-            'blood_quantity' => 'required|integer|min:1',
+            'blood_quantity' => 'required|integer|min:1|max:2',
             'request_type' => 'required|in:Emergency,Rare,Normal',
             'request_form' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'payment' => 'required|numeric|min:0',
+            'payment' => 'required|numeric|min:0|max:1500',
         ]);
 
         $user = Auth::user();

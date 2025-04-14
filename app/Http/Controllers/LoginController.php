@@ -16,31 +16,34 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validate the form data
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
             'user_type' => 'required|in:receiver,donor,admin',
         ]);
 
-        // Attempt to log in based on user type
+        $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
+
         if ($request->user_type === 'admin') {
-            // Log in as admin
-            if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (Auth::guard('admin')->attempt($credentials, $remember)) {
                 return redirect()->route('admin.dashboard');
             }
         } else {
-            // Log in as user (receiver or donor)
-            if (Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (Auth::guard('web')->attempt($credentials, $remember)) {
                 $user = Auth::guard('web')->user();
                 if ($user->user_type === $request->user_type) {
                     return redirect()->route($request->user_type . '.dashboard');
                 }
+                Auth::guard('web')->logout(); // Log out if user type doesn't match
             }
         }
 
-        // Redirect back with error message
-        return redirect()->back()->with('error', 'Invalid email, password, or user type.');
+        return redirect()->route('login')
+            ->withInput($request->only('email', 'remember'))
+            ->withErrors([
+                'email' => 'Invalid credentials or user type.',
+            ]);
     }
 
     public function logout(Request $request)

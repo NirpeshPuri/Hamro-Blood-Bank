@@ -140,6 +140,17 @@
             color: #666;
         }
 
+        .eligibility-message {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .admin-item {
                 flex-direction: column;
@@ -155,6 +166,11 @@
 
     <div class="donation-container">
         <h1 class="page-title">Blood Donation Request</h1>
+
+        <div id="eligibilityMessage" class="eligibility-message">
+            <h3>You cannot donate blood again until 3 months have passed since your last donation.</h3>
+        </div>
+
         <button id="findAdminsBtn" class="action-btn">
             <span id="findBtnText">Find Nearby Blood Banks</span>
             <span id="findBtnLoading" class="loading" style="display: none;"></span>
@@ -209,7 +225,7 @@
                     </tr>
                     <tr>
                         <td class="label-cell"><label>Units Needed:</label></td>
-                        <td><input type="number" class="form-input" name="blood_quantity" min="1" max="10" required></td>
+                        <td><input type="number" class="form-input" name="blood_quantity" min="1" max="2" required></td>
                     </tr>
                     <tr>
                         <td class="label-cell"><label>Medical Form:</label></td>
@@ -278,7 +294,32 @@
                                     $('.select-btn').click(function() {
                                         const adminId = $(this).data('admin-id');
                                         const adminName = $(this).data('admin-name');
-                                        selectAdmin(adminId, adminName);
+
+                                        // Check eligibility before showing form
+                                        $.ajax({
+                                            url: "{{ route('donate.blood.check-eligibility') }}",
+                                            type: "GET",
+                                            success: function(response) {
+                                                if (response.eligible) {
+                                                    $('#adminId').val(adminId);
+                                                    $('#adminNameDisplay').val(adminName);
+                                                    $('#donationFormContainer').show();
+                                                    $('#eligibilityMessage').hide();
+                                                    $('html, body').animate({
+                                                        scrollTop: $('#donationFormContainer').offset().top - 20
+                                                    }, 500);
+                                                } else {
+                                                    $('#eligibilityMessage').show();
+                                                    $('#donationFormContainer').hide();
+                                                    $('html, body').animate({
+                                                        scrollTop: $('body').offset().top
+                                                    }, 500);
+                                                }
+                                            },
+                                            error: function(xhr) {
+                                                console.error('Error checking eligibility:', xhr.responseText);
+                                            }
+                                        });
                                     });
                                 }
                             },
@@ -301,16 +342,6 @@
                     alert('Geolocation is not supported by this browser.');
                 }
             });
-
-            // Select a blood bank
-            function selectAdmin(adminId, adminName) {
-                $('#adminId').val(adminId);
-                $('#adminNameDisplay').val(adminName);
-                $('#donationFormContainer').show();
-                $('html, body').animate({
-                    scrollTop: $('#donationFormContainer').offset().top - 20
-                }, 500);
-            }
 
             // Handle form submission
             $('#donationForm').submit(function(e) {
@@ -336,6 +367,7 @@
                             alert(response.message);
                             $('#donationForm')[0].reset();
                             $('#donationFormContainer').hide();
+                            $('#eligibilityMessage').show();
                         } else {
                             alert('Error: ' + response.message);
                         }

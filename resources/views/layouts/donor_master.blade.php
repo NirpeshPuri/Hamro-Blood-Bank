@@ -440,6 +440,98 @@
             color: #666;
             padding: 0 20px 20px;
         }
+        /* Profile Dropdown Styles - Add this to your existing styles */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 20px;
+        }
+
+        .profile-button {
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .profile-button:hover {
+            color: #ff4757;
+        }
+
+        .user-icon {
+            font-size: 24px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 1001;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ff4757;
+            color: white;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
+
+        /* Mobile responsiveness for profile dropdown */
+        @media (max-width: 768px) {
+            .profile-dropdown {
+                margin-left: 10px;
+            }
+
+            .dropdown-content {
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                min-width: 160px;
+            }
+
+            .dropdown-content::before {
+                right: 10px;
+            }
+        }
     </style>
     @yield('css')
 </head>
@@ -463,10 +555,27 @@
         <a href="#" class="logo"></a>
         <ul>
             <li><a href="{{url('home')}}">Home</a></li>
-            <li><a href="{{url('about')}}">About Us</a></li>
+            <li><a href="{{url('donor_about')}}">About Us</a></li>
             <li><a href="{{route('donate.blood')}}">Donate Blood</a></li>
             <li><a href="{{route('donor.status')}}">Check Status</a></li>
-            <li><a href="{{url('contact_us')}}">Contact Us</a></li>
+            <li><a href="{{url('donor_contact_us')}}">Contact Us</a></li>
+            @auth
+                <li class="profile-dropdown">
+                    <button class="profile-button">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span>{{ Auth::user()->name }}</span>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="">Update Profile</a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+                        </form>
+                    </div>
+                </li>
+            @endauth
         </ul>
     </div>
 </nav>
@@ -487,10 +596,11 @@
         <!-- Quick Links -->
         <div class="footer-section">
             <h3>Quick Links</h3>
-            <p><a href="#home">Home</a></p>
-            <p><a href="#about">About Us</a></p>
-            <p><a href="#why-donate">Why Donate Blood</a></p>
-            <p><a href="#login">Login</a></p>
+            <p><a href="{{url('home')}}">Home</a></p>
+            <p><a href="{{url('donor_about')}}">About Us</a></p>
+            <p><a href="{{route('donate.blood')}}">Donate Blood</a></p>
+            <p><a href="{{route('donor.status')}}">Check Status</a></p>
+            <p><a href="{{url('donor_contact_us')}}">Contact Us</a></p>
         </div>
 
         <!-- Social Media Links -->

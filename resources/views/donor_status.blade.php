@@ -16,12 +16,7 @@
             </div>
         @endif
 
-        @if(!$eligibility['eligible'])
-            <div class="next-donation">
-                <strong>Next Eligible Donation Date:</strong>
-                {{ $eligibility['next_donation_date']->format('M d, Y') }}
-            </div>
-        @endif
+
 
         <div class="table-responsive">
             <table class="request-table">

@@ -13,24 +13,20 @@ class DonorController extends Controller
 {
     public function showDonationPage()
     {
-        $eligibility = $this->checkEligibility(auth()->id());
-        return view('donate_blood', [
-            'isEligible' => $eligibility['eligible'],
-            'nextDonationDate' => $eligibility['next_donation_date'] ?? null
-        ]);
+        return view('donate_blood');
     }
 
-    protected function checkEligibility($userId)
+    public function checkEligibility()
     {
-        $lastDonation = DonateBlood::where('user_id', $userId)
-            ->where('status', 'completed')
+        $lastDonation = DonateBlood::where('user_id', auth()->id())
+            ->where('status', 'approved')
             ->where('donation_date', '>=', now()->subMonths(3))
             ->first();
 
-        return $lastDonation ? [
-            'eligible' => false,
-            'next_donation_date' => $lastDonation->donation_date->addMonths(3)
-        ] : ['eligible' => true];
+        return response()->json([
+            'eligible' => !$lastDonation,
+            'next_donation_date' => $lastDonation ? $lastDonation->donation_date->addMonths(3) : null
+        ]);
     }
 
     public function findAdminsBtn(Request $request)
@@ -74,12 +70,16 @@ class DonorController extends Controller
 
     public function submitDonation(Request $request)
     {
-        $eligibility = $this->checkEligibility(auth()->id());
-        if (!$eligibility['eligible']) {
+        $lastDonation = DonateBlood::where('user_id', auth()->id())
+            ->where('status', 'approved')
+            ->where('donation_date', '>=', now()->subMonths(3))
+            ->first();
+
+        if ($lastDonation) {
             return response()->json([
                 'success' => false,
                 'message' => 'You can only donate blood once every 3 months. Your last donation was on ' .
-                    $eligibility['next_donation_date']->subMonths(3)->format('M d, Y')
+                    $lastDonation->donation_date->format('M d, Y')
             ], 422);
         }
 
@@ -89,7 +89,7 @@ class DonorController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
             'blood_type' => 'required|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'blood_quantity' => 'required|integer|min:1|max:10',
+            'blood_quantity' => 'required|integer|min:1|max:2',
             'request_form' => 'required|file|mimes:jpeg,png,pdf|max:2048',
         ]);
 
@@ -108,8 +108,7 @@ class DonorController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Donation request submitted successfully.',
-                'next_donation_date' => now()->addMonths(3)->format('Y-m-d H:i:s')
+                'message' => 'Donation request submitted successfully.'
             ]);
 
         } catch (\Exception $e) {
@@ -155,7 +154,7 @@ class DonorController extends Controller
         abort_unless($donation->canEdit(), 403, 'Cannot update this donation');
 
         $validated = $request->validate([
-            'blood_quantity' => 'required|integer|min:1|max:10',
+            'blood_quantity' => 'required|integer|min:1|max:2',
             'request_form' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
         ]);
 
@@ -182,19 +181,16 @@ class DonorController extends Controller
 
     public function destroy(DonateBlood $donation)
     {
-        // Authorization check - ensure user owns this donation
         if ($donation->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Only allow deletion of pending donations
         if ($donation->status !== 'pending') {
             return redirect()->route('donor.status')
                 ->with('error', 'Only pending donations can be deleted');
         }
 
         try {
-            // Delete associated file if exists
             if ($donation->request_form && file_exists(public_path($donation->request_form))) {
                 unlink(public_path($donation->request_form));
             }
