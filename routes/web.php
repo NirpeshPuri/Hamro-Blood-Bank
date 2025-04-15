@@ -117,6 +117,22 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/receiver_update_profile', [ProfileUpdateController::class, 'update']);
 // routes/web.php
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // In web.php
+    Route::get('/blood-banks/{adminId}/stock', function($adminId) {
+        $bloodBank = App\Models\BloodBank::where('admin_id', $adminId)->firstOrFail();
+
+        return response()->json([
+            'A+' => $bloodBank->{'A+'} ?? 0,
+            'A-' => $bloodBank->{'A-'} ?? 0,
+            'B+' => $bloodBank->{'B+'} ?? 0,
+            'B-' => $bloodBank->{'B-'} ?? 0,
+            'AB+' => $bloodBank->{'AB+'} ?? 0,
+            'AB-' => $bloodBank->{'AB-'} ?? 0,
+            'O+' => $bloodBank->{'O+'} ?? 0,
+            'O-' => $bloodBank->{'O-'} ?? 0
+        ]);
+    });
 });
 
 

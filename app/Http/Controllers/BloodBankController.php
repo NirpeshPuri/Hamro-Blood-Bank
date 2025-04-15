@@ -43,4 +43,6 @@ class BloodBankController extends Controller
         return redirect()->route('blood-banks.show')
             ->with('success', 'Blood stock updated successfully');
     }
+
+
 }

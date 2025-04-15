@@ -2,6 +2,7 @@
 @section('title', 'Search Blood')
 @section('content')
     <style>
+        /* Main Container Styles */
         .center-container {
             display: flex;
             flex-direction: column;
@@ -9,40 +10,12 @@
             justify-content: center;
             text-align: center;
             width: 100%;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            color: #ff4757;
-            margin-bottom: 20px;
-        }
-
-        button {
-            background-color: #ff4757;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #ff6b6b;
-            transform: translateY(-2px);
-        }
-
+        /* Blood Bank List Styles */
         #nearbyAdmins {
             margin-top: 30px;
             padding: 20px;
@@ -91,28 +64,76 @@
             background-color: #218838;
         }
 
+        /* Form Container Styles */
+        .form-container {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Stock Display Styles */
+        .stock-display {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .stock-table th,
+        .stock-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stock-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* Style for different stock levels */
+        .text-danger { color: #dc3545; font-weight: bold; }
+        .text-warning { color: #ffc107; font-weight: bold; }
+
+        /* Form Styles */
+        #requestForm {
+            flex: 2;
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
         #requestForm table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
         #requestForm table td {
             padding: 10px;
-            border: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
         }
 
         #requestForm table td:first-child {
+            width: 40%;
             font-weight: 500;
-            background-color: #f8f9fa;
-            width: 30%;
         }
 
-        #requestForm table input[type="text"],
-        #requestForm table input[type="email"],
-        #requestForm table input[type="tel"],
-        #requestForm table select,
-        #requestForm table input[type="number"] {
+        #requestForm input[type="text"],
+        #requestForm input[type="email"],
+        #requestForm input[type="tel"],
+        #requestForm select,
+        #requestForm input[type="number"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -120,14 +141,14 @@
             font-size: 1rem;
         }
 
-        #requestForm table input[type="text"]:disabled,
-        #requestForm table input[type="email"]:disabled,
-        #requestForm table input[type="tel"]:disabled {
+        #requestForm input[type="text"]:disabled,
+        #requestForm input[type="email"]:disabled,
+        #requestForm input[type="tel"]:disabled {
             background-color: #f8f9fa;
             color: #666;
         }
 
-        #requestForm table input[type="file"] {
+        #requestForm input[type="file"] {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -135,48 +156,37 @@
             background-color: white;
         }
 
-        #requestForm table button[type="submit"] {
+        /* Button Styles */
+        #submitRequest {
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px;
-            font-size: 1rem;
+            padding: 10px 20px;
             border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
-        #requestForm table button[type="submit"]:hover {
+        #submitRequest:hover {
             background-color: #218838;
         }
 
-        #requestForm table button[type="button"] {
+        #findNearbyAdmins {
             background-color: #ff4757;
             color: white;
             border: none;
-            padding: 10px;
-            font-size: 1rem;
+            padding: 10px 20px;
             border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
-        #requestForm table button[type="button"]:hover {
+        #findNearbyAdmins:hover {
             background-color: #ff6b6b;
         }
 
-        @media (max-width: 768px) {
-            #adminList li {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            #adminList li button {
-                margin-top: 10px;
-                width: 100%;
-            }
-        }
-        /* Add these to your existing styles */
         #changeAdmin {
             background-color: #6c757d;
             color: white;
@@ -185,20 +195,34 @@
             border-radius: 5px;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
         #changeAdmin:hover {
             background-color: #5a6268;
         }
 
-        #nearbyAdmins {
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .form-container {
+                flex-direction: column;
+            }
 
-        #adminList li button {
-            margin-left: 10px;
+            .stock-display, #requestForm {
+                width: 100%;
+            }
+
+            #requestForm table td {
+                display: block;
+                width: 100%;
+                padding: 8px 0;
+                border-bottom: none;
+            }
+
+            #requestForm table td:first-child {
+                width: 100%;
+                padding-bottom: 5px;
+            }
         }
     </style>
 
@@ -206,171 +230,216 @@
         <h1>Search for Blood</h1>
         <button id="findNearbyAdmins">Find Nearby Blood Banks</button>
 
-        <!-- List of nearby admins (now always visible after first search) -->
+        <!-- List of nearby admins -->
         <div id="nearbyAdmins" style="display: none;">
             <h2>Nearby Blood Banks</h2>
-            <button id="changeAdmin" style="display: none; margin-bottom: 10px;"
-                    class="btn btn-secondary">Change Blood Bank</button>
+            <button id="changeAdmin" style="display: none; margin-bottom: 10px;">Change Blood Bank</button>
             <ul id="adminList"></ul>
         </div>
 
-        <!-- Form to submit request -->
-        <div id="requestForm" style="display: none;">
-            <h2>Submit Request</h2>
-            <form id="submitRequestForm" method="post" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" id="adminId" name="admin_id">
-                <input type="hidden" id="userId" name="user_id" value="{{ auth()->user()->id }}">
-
-                <table>
+        <!-- Form container with stock display and request form -->
+        <div class="form-container">
+            <!-- Blood stock display (left side) -->
+            <div class="stock-display" id="stockDisplay" style="display: none;">
+                <h3>Available Blood Stock</h3>
+                <table class="stock-table">
+                    <thead>
                     <tr>
-                        <td><label>Blood Bank:</label></td>
-                        <td><input type="text" id="adminNameDisplay" disabled></td>
+                        <th>Blood Type</th>
+                        <th>Units Available</th>
                     </tr>
-                    <tr>
-                        <td><label for="user_name">Name:</label></td>
-                        <td><input type="text" id="user_name" name="user_name" value="{{ auth()->user()->name }}" disabled></td>
-                    </tr>
-                    <tr>
-                        <td><label for="user_email">Email:</label></td>
-                        <td><input type="email" id="user_email" name="user_email" value="{{ auth()->user()->email }}" disabled></td>
-                    </tr>
-                    <tr>
-                        <td><label for="user_phone">Phone:</label></td>
-                        <td><input type="text" id="user_phone" name="user_phone" value="{{ auth()->user()->phone }}" disabled></td>
-                    </tr>
-
-                    <!-- Blood Group Selection -->
-                    <tr>
-                        <td><label for="blood_group">Blood Group:</label></td>
-                        <td>
-                            <select id="blood_group" name="blood_group" required>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                            </select>
-                        </td>
-                    </tr>
-
-                    <!-- Blood Quantity -->
-                    <tr>
-                        <td><label for="blood_quantity">Blood Quantity (Units):</label></td>
-                        <td>
-                            <input type="number" id="blood_quantity" name="blood_quantity" min="1" max="2" required>
-                        </td>
-                    </tr>
-
-                    <!-- Request Type -->
-                    <tr>
-                        <td><label for="request_type">Request Type:</label></td>
-                        <td>
-                            <select id="request_type" name="request_type" required>
-                                <option value="Emergency">Emergency</option>
-                                <option value="Rare">Rare</option>
-                                <option value="Normal">Normal</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="payment">Payment Amount (NPR):</label></td>
-                        <td>
-                            <input type="number" id="payment" name="payment" min="0" max="1500" step="0.01" required>
-                        </td>
-                    </tr>
-
-                    <!-- Hospital Form Upload -->
-                    <tr>
-                        <td><label for="request_form">Upload Hospital Form (Proof):</label></td>
-                        <td><input type="file" id="request_form" name="request_form" accept="image/*" required></td>
-                    </tr>
-
-                    <!-- Submit Button -->
-                    <tr>
-                        <td colspan="2">
-                            <button type="submit" id="submitRequest">Submit Request</button>
-                        </td>
-                    </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                    <!-- Will be populated by JavaScript -->
+                    </tbody>
                 </table>
-            </form>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    <span class="text-danger">■</span> Out of stock &nbsp;
+                    <span class="text-warning">■</span> Low stock
+                </div>
+            </div>
+
+            <!-- Your exact form (right side) -->
+            <div id="requestForm">
+                <h2>Submit Request</h2>
+                <form id="submitRequestForm" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" id="adminId" name="admin_id">
+                    <input type="hidden" id="userId" name="user_id" value="{{ auth()->user()->id }}">
+
+                    <table>
+                        <tr>
+                            <td><label>Blood Bank:</label></td>
+                            <td><input type="text" id="adminNameDisplay" disabled></td>
+                        </tr>
+                        <tr>
+                            <td><label for="user_name">Name:</label></td>
+                            <td><input type="text" id="user_name" name="user_name" value="{{ auth()->user()->name }}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td><label for="user_email">Email:</label></td>
+                            <td><input type="email" id="user_email" name="user_email" value="{{ auth()->user()->email }}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td><label for="user_phone">Phone:</label></td>
+                            <td><input type="text" id="user_phone" name="user_phone" value="{{ auth()->user()->phone }}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td><label for="blood_group">Blood Group:</label></td>
+                            <td>
+                                <select id="blood_group" name="blood_group" required>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="blood_quantity">Blood Quantity (Units):</label></td>
+                            <td>
+                                <input type="number" id="blood_quantity" name="blood_quantity" min="1" max="2" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="request_type">Request Type:</label></td>
+                            <td>
+                                <select id="request_type" name="request_type" required>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Rare">Rare</option>
+                                    <option value="Normal">Normal</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="payment">Payment Amount (NPR):</label></td>
+                            <td>
+                                <input type="number" id="payment" name="payment" min="0" max="1500" step="0.01" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="request_form">Upload Hospital Form (Proof):</label></td>
+                            <td><input type="file" id="request_form" name="request_form" accept="image/*" required></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button type="submit" id="submitRequest">Submit Request</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Find nearby admins
-        $('#findNearbyAdmins').click(function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {   // Browser requests location permission
-                    const latitude = position.coords.latitude;  // Gets user's latitude/longitude
-                    const longitude = position.coords.longitude;
-
-                    $.ajax({
-                        url: "{{ route('find.nearby.admins') }}",
-                        type: "POST",
-                        data: {
-                            latitude: latitude,
-                            longitude: longitude,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(response) {
-                            $('#nearbyAdmins').show();
-                            $('#adminList').empty();
-                            response.forEach(function(admin) {
-                                $('#adminList').append(
-                                    `<li>
-                                        ${admin.name} (${admin.distance.toFixed(2)} km)
-                                        <button onclick="selectAdmin(${admin.id}, '${admin.name.replace(/'/g, "\\'")}')">
-                                            Select
-                                        </button>
-                                    </li>`
-                                );
-                            });
-                        }
+        $(document).ready(function() {
+            // Find nearby admins
+            $('#findNearbyAdmins').click(function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        $.ajax({
+                            url: "{{ route('find.nearby.admins') }}",
+                            type: "POST",
+                            data: {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                $('#nearbyAdmins').show();
+                                $('#adminList').empty();
+                                response.forEach(function(admin) {
+                                    $('#adminList').append(
+                                        `<li>
+                                    ${admin.name} (${admin.distance.toFixed(2)} km)
+                                    <button onclick="selectAdmin(${admin.id}, '${admin.name.replace(/'/g, "\\'")}')">
+                                        Select
+                                    </button>
+                                </li>`
+                                    );
+                                });
+                            }
+                        });
                     });
-                });
-            } else {
-                alert('Geolocation is not supported by this browser.');
-            }
-        });
-
-        // Function to select an admin
-        function selectAdmin(adminId, adminName) {
-            $('#adminId').val(adminId);
-            $('#adminNameDisplay').val(adminName);
-            $('#requestForm').show();
-            $('#changeAdmin').show();
-        }
-
-        // Change admin button
-        $('#changeAdmin').click(function() {
-            $('#requestForm').hide();
-            $(this).hide();
-        });
-
-        // Form submission remains the same
-        $('#submitRequestForm').on('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            $.ajax({
-                url: "{{ route('submit.blood.request') }}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert('Blood request submitted successfully!');
-                    window.location.reload();
+                } else {
+                    alert('Geolocation is not supported by this browser.');
                 }
+            });
+
+            // Function to select an admin and show their blood stock
+            window.selectAdmin = function(adminId, adminName) {
+                $('#adminId').val(adminId);
+                $('#adminNameDisplay').val(adminName);
+
+                // Fetch blood stock directly from blood_banks table
+                $.ajax({
+                    url: `/blood-banks/${adminId}/stock`,
+                    type: "GET",
+                    success: function(stockData) {
+                        // Populate the stock table
+                        const stockTableBody = $('#stockTableBody');
+                        stockTableBody.empty();
+
+                        // Define all blood types
+                        const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+                        // Create table rows for each blood type
+                        bloodTypes.forEach(type => {
+                            const quantity = stockData[type] || 0;
+                            const rowClass = quantity === 0 ? 'text-danger' : (quantity < 10 ? 'text-warning' : '');
+
+                            stockTableBody.append(
+                                `<tr>
+                            <td class="${rowClass}">${type}</td>
+                            <td class="${rowClass}">${quantity} units</td>
+                        </tr>`
+                            );
+                        });
+
+                        // Show the stock display and form
+                        $('#stockDisplay').show();
+                        $('#requestForm').show();
+                        $('#changeAdmin').show();
+                    },
+                    error: function() {
+                        alert('Failed to load blood stock information');
+                    }
+                });
+            };
+
+            // Change admin button
+            $('#changeAdmin').click(function() {
+                $('#stockDisplay').hide();
+                $('#requestForm').hide();
+                $(this).hide();
+            });
+
+            // Form submission
+            $('#submitRequestForm').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: "{{ route('submit.blood.request') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        alert('Blood request submitted successfully!');
+                        window.location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + (xhr.responseJSON?.message || 'Request failed'));
+                    }
+                });
             });
         });
     </script>
 @endsection
-
-
-
