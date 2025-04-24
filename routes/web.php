@@ -70,6 +70,11 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::post('/admin/donor-requests/{id}/update-status', [AdminController::class, 'updateDonorStatus'])
         ->name('admin.donor.update-status');
+
+
+        Route::get('/', [UserController::class, 'index'])->name('admin.user_detail');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
 });
 
 // Receiver Routes
