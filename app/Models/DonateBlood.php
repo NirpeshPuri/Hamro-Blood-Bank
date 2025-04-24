@@ -59,4 +59,13 @@ class DonateBlood extends Model
         ];
         return $badges[$status] ?? 'bg-blue-100 text-blue-800';
     }
+    public function getBloodTypeAttribute($value)
+    {
+        return strtoupper(str_replace(' ', '', $value));
+    }
+
+    public function setBloodTypeAttribute($value)
+    {
+        $this->attributes['blood_type'] = strtoupper(str_replace(' ', '', $value));
+    }
 }

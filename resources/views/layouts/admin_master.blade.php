@@ -462,8 +462,8 @@
     <div class="container">
         <a href="#" class="logo"></a>
         <ul>
-            <li><a href="{{url('admin_dashboard')}}">Receiver Request</a></li>
-            <li><a href="{{url('donor_request')}}">Donor Request</a></li>
+            <li><a href="{{ route('admin.dashboard') }}">Receiver Request</a></li>
+            <li><a href="{{ route('admin.donor.requests') }}">Donor Request</a></li>
             <li><a href="{{ route('blood-banks.show') }}">Blood Stock</a></li>
             <li><a href="{{url('user_detail')}}">User Detail</a></li>
             <li><a href="{{url('request_detail')}}">Request Details</a></li>

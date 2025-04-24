@@ -19,7 +19,7 @@ class DonorController extends Controller
     public function checkEligibility()
     {
         $lastDonation = DonateBlood::where('user_id', auth()->id())
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'pending'])
             ->where('donation_date', '>=', now()->subMonths(3))
             ->first();
 
@@ -71,7 +71,7 @@ class DonorController extends Controller
     public function submitDonation(Request $request)
     {
         $lastDonation = DonateBlood::where('user_id', auth()->id())
-            ->where('status', 'approved')
+            ->where('status', ['approved', 'pending'])
             ->where('donation_date', '>=', now()->subMonths(3))
             ->first();
 

@@ -60,6 +60,16 @@ Route::post('/register', [RegisterController::class, 'register']);
 // Admin Routes
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+    // Donor Requests
+    Route::get('/admin/donor-requests', [AdminController::class, 'donorRequests'])->name('admin.donor.requests');
+
+    // Update Status Routes
+    Route::post('/admin/receiver-requests/{id}/update-status', [AdminController::class, 'updateReceiverStatus'])
+        ->name('admin.receiver.update-status');
+
+    Route::post('/admin/donor-requests/{id}/update-status', [AdminController::class, 'updateDonorStatus'])
+        ->name('admin.donor.update-status');
 });
 
 // Receiver Routes
@@ -88,7 +98,7 @@ Route::post('/find-nearby-admins', [BloodSearchController::class, 'findNearbyAdm
 // Route to submit a blood request (AJAX)
 Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.blood.request');
 
-// In routes/web.php
+
 use App\Http\Controllers\EsewaController;
 Route::get('/esewa_payment', function () {
     return view('esewa_payment');
@@ -98,7 +108,6 @@ Route::post('/esewa', [EsewaController::class, 'esewaPay'])->name('esewa');
 Route::get('/success', [EsewaController::class, 'esewaPaySuccess'])->name('esewa.success');
 Route::get('/failure', [EsewaController::class, 'esewaPayFailed'])->name('esewa.failure');
 
-// routes/web.php
 
 use App\Http\Controllers\ReceiverStatusController;
 
@@ -115,10 +124,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/receiver_update_profile', [ProfileUpdateController::class, 'showUpdateForm1'])->name('receiver.profile.update');
     Route::post('/receiver_update_profile', [ProfileUpdateController::class, 'update']);
-// routes/web.php
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // In web.php
+
     Route::get('/blood-banks/{adminId}/stock', function($adminId) {
         $bloodBank = App\Models\BloodBank::where('admin_id', $adminId)->firstOrFail();
 
@@ -159,18 +168,11 @@ Route::middleware(['auth'])->prefix('donor')->group(function () {
 
     Route::get('/donor_update_profile', [ProfileUpdateController::class, 'showUpdateForm'])->name('profile.update');
     Route::post('/donor_update_profile', [ProfileUpdateController::class, 'update']);
-// routes/web.php
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 
-
-
-// routes/web.php
-
-// routes/web.php
-
-// routes/web.php
 
 use App\Http\Controllers\BloodBankController;
 
@@ -179,3 +181,9 @@ Route::prefix('blood-banks')->middleware('auth:admin')->group(function () {
     Route::get('/update-stock', [BloodBankController::class, 'updateStockForm'])->name('blood-banks.update-form');
     Route::post('/update-stock', [BloodBankController::class, 'updateStock'])->name('blood-banks.update');
 });
+
+
+
+
+
+

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,4 +18,9 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function bloodBank()
+    {
+        return $this->hasOne(BloodBank::class, 'admin_id');
+    }
 }

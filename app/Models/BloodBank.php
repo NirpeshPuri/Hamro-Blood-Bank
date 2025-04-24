@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,19 +16,50 @@ class BloodBank extends Model
         'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
     ];
 
+    protected $attributes = [
+        'A+' => 0,
+        'A-' => 0,
+        'B+' => 0,
+        'B-' => 0,
+        'AB+' => 0,
+        'AB-' => 0,
+        'O+' => 0,
+        'O-' => 0,
+    ];
+
+    public static function bloodGroups()
+    {
+        return ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    }
+
     public function admin()
     {
         return $this->belongsTo(Admin::class);
     }
 
+    public function getBloodGroupQuantity($group)
+    {
+        $group = $this->normalizeBloodGroup($group);
+        return $this->$group ?? 0;
+    }
+
     public function updateStock($bloodType, $quantity)
     {
-        if ($quantity < 0 && abs($quantity) > $this->$bloodType) {
-            return false; // Not enough blood to deduct
+        $bloodType = $this->normalizeBloodGroup($bloodType);
+
+        $current = $this->$bloodType ?? 0;
+        $newQuantity = $current + $quantity;
+
+        if ($newQuantity < 0) {
+            throw new \Exception("Not enough {$bloodType} blood available (current: {$current}, requested: " . abs($quantity) . ")");
         }
 
-        $this->$bloodType += $quantity;
-        $this->save();
+        $this->$bloodType = $newQuantity;
+
+        if (!$this->save()) {
+            throw new \Exception("Failed to update blood bank records");
+        }
+
         return true;
     }
 
@@ -36,12 +68,23 @@ class BloodBank extends Model
         $admin = Auth::guard('admin')->user();
 
         if (!$admin) {
-            abort(403, 'Unauthorized - Admin not logged in');
+            throw new \Exception('Admin authentication required');
         }
 
         return self::firstOrCreate(
             ['admin_id' => $admin->id],
             ['admin_name' => $admin->name ?? 'Admin']
         );
+    }
+
+    protected function normalizeBloodGroup($group)
+    {
+        $group = strtoupper(str_replace(' ', '', $group));
+
+        if (!in_array($group, self::bloodGroups())) {
+            throw new \Exception("Invalid blood type: {$group}. Valid types are: " . implode(', ', self::bloodGroups()));
+        }
+
+        return $group;
     }
 }
