@@ -111,4 +111,56 @@ class RequestController extends Controller
             return back()->with('success', 'Request status updated successfully');
         });
     }
+
+
+
+    public function history()
+    {
+        $requests = BloodRequest::with(['user', 'admin'])->get();
+        $donations = DonateBlood::with(['user', 'admin'])->get();
+
+        $combinedHistory = collect();
+
+        // Transform requests
+        foreach ($requests as $request) {
+            $combinedHistory->push([
+                'type' => 'request',
+                'id' => $request->id,
+                'user_name' => $request->user_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'blood_group' => $request->blood_group,
+                'blood_quantity' => $request->blood_quantity,
+                'request_type' => $request->request_type,
+                'status' => $request->status,
+                'created_at' => $request->created_at,
+                'payment' => $request->payment
+            ]);
+        }
+
+        // Transform donations
+        foreach ($donations as $donation) {
+            $combinedHistory->push([
+                'type' => 'donation',
+                'id' => $donation->id,
+                'user_name' => $donation->user_name,
+                'email' => $donation->email,
+                'phone' => $donation->phone,
+                'blood_type' => $donation->blood_type,
+                'blood_quantity' => $donation->blood_quantity,
+                'status' => $donation->status,
+                'donation_date' => $donation->donation_date,
+                'created_at' => $donation->created_at
+            ]);
+        }
+
+        // Sort by date (newest first)
+        $combinedHistory = $combinedHistory->sortByDesc(function($item) {
+            return $item['type'] === 'donation' && isset($item['donation_date'])
+                ? $item['donation_date']
+                : $item['created_at'];
+        });
+
+        return view('admin.request_detail', compact('combinedHistory'));
+    }
 }

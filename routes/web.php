@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileUpdateController;
+use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 
@@ -75,6 +76,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('admin.user_detail');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
+    Route::get('/request-history', [RequestController::class, 'history'])
+        ->name('admin.request_detail');
+
+    Route::get('profile', [AdminController::class, 'showProfileUpdateForm'])->name('admin.profile');
+    Route::put('profile/update', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
 });
 
 // Receiver Routes
