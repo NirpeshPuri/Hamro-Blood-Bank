@@ -53,9 +53,14 @@
                         </td>
                         <td>{{ $user->created_at->format('d/m/Y') }}</td>
                         <td>
-                            <button class="btn btn-danger btn-sm btn-circle" onclick="confirmDelete({{ $user->id }})">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this user?')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -63,10 +68,6 @@
             </table>
         </div>
     </div>
-    <form id="deleteForm" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
     <style>
         .request-container {
             max-width: 1200px;
@@ -246,13 +247,4 @@
         }
     </style>
 
-    <script>
-        function confirmDelete(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                const form = document.getElementById('deleteForm');
-                form.action = `/admin/users/${userId}`;
-                form.submit();
-            }
-        }
-    </script>
 @endsection

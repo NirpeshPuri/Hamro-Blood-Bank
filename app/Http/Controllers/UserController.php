@@ -41,15 +41,12 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // Extra protection against admin deletion
         if ($user->user_type === 'admin') {
-            return redirect()->back()
-                ->with('error', 'Admin accounts cannot be deleted through this interface');
+            return back()->with('error', 'Cannot delete admin users');
         }
 
         $user->delete();
-
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.user_detail')
             ->with('success', 'User deleted successfully');
     }
 }

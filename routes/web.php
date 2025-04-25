@@ -72,8 +72,8 @@ Route::middleware(['auth:admin'])->group(function () {
         ->name('admin.donor.update-status');
 
 
-        Route::get('/', [UserController::class, 'index'])->name('admin.user_detail');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/', [UserController::class, 'index'])->name('admin.user_detail');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
 });
 
