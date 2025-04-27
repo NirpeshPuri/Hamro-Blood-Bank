@@ -7,7 +7,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            max-width: 90%; /* Decrease max-width to make the card smaller */
+            max-width: 90%;
             margin: 40px auto;
         }
 
@@ -16,8 +16,8 @@
         }
 
         .custom-table {
-            font-size: 1rem; /* Smaller font size */
-            width: 95%; /* Adjust width */
+            font-size: 1rem;
+            width: 95%;
             margin: 0 auto;
             text-align: center;
         }
@@ -25,14 +25,16 @@
         .custom-table thead th {
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 1.1rem; /* Increase font size for header */
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
-            color: #6c757d;
+            color: white; /* Changed to white */
+            background-color: #dc3545; /* Changed to red */
             border-top: none;
+            padding: 15px; /* Added padding for better spacing */
         }
 
         .custom-table tbody td {
-            padding: 0.8rem; /* Smaller padding */
+            padding: 0.8rem;
             vertical-align: middle;
         }
 
@@ -123,7 +125,7 @@
 
         .table-title {
             text-align: center;
-            font-size: 1.5rem; /* Increase font size for the title */
+            font-size: 1.5rem;
             font-weight: 700;
         }
 

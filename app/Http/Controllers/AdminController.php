@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BloodRequest;
+use App\Models\Contact;
 use App\Models\DonateBlood;
 use App\Models\BloodBank;
 use Illuminate\Http\Request;
@@ -200,5 +201,12 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to update profile. Please try again.');
         }
+    }
+
+    public function report()
+    {
+        $requests = Contact::with(['user', 'admin'])->get();
+
+        return view('admin.user_report', compact('requests'));
     }
 }

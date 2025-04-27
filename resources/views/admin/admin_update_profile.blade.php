@@ -405,9 +405,7 @@
                         <button type="submit" class="submit-btn">
                             <i class="fas fa-save me-2"></i>Save Changes
                         </button>
-                        <button type="reset" class="reset-btn">
-                            <i class="fas fa-undo me-2"></i>Reset
-                        </button>
+
                     </div>
                 </form>
             </div>

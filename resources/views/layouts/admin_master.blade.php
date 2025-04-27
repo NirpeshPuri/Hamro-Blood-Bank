@@ -558,7 +558,7 @@
             <li><a href="{{ route('blood-banks.show') }}">Blood Stock</a></li>
             <li><a href="{{ route('admin.user_detail') }}">User Detail</a></li>
             <li><a href="{{ route('admin.request_detail')}}">Request History</a></li>
-            <li><a href="{{ route('admin.request_detail')}}">User Report</a></li>
+            <li><a href="{{ route('admin.user_report')}}">User Report</a></li>
             @auth('admin')
                 <li class="profile-dropdown">
                     <button class="profile-button">

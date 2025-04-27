@@ -103,7 +103,7 @@
                     <input type="text" name="name" placeholder="Your Name" required>
                     <input type="email" name="email" placeholder="Your Email Address" required>
                     <input type="tel" name="phone" placeholder="Your Phone Number" required>
-                    <textarea name="message" placeholder="Your Message" required></textarea>
+                    <textarea name="message" placeholder="Your Message" required maxlength="255"></textarea>
                     <button type="submit">Send Message</button>
                 </form>
             </div>

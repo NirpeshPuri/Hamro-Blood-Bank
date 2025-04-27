@@ -81,6 +81,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('profile', [AdminController::class, 'showProfileUpdateForm'])->name('admin.profile');
     Route::put('profile/update', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
+    Route::get('user_report', [AdminController::class, 'report'])->name('admin.user_report');
 });
 
 // Receiver Routes
