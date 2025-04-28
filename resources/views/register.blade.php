@@ -111,7 +111,7 @@
                 </form>
                 <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
 
-                <a href="{{ route('login') }}">Go Back</a></p>
+
             </div>
         </div>
     </section>

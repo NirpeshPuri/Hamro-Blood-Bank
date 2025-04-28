@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Hamro Blood Bank - Home</title>
+    <title> @yield('title')</title>
     <meta name="description" content="Join Hamro Blood Bank to save lives. Donate blood, find donors, and learn why blood donation matters.">
     <style>
         /* Basic Reset */

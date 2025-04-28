@@ -100,9 +100,9 @@
 
                 <form action="{{ url('/submit-contact-form') }}" method="POST">
                     @csrf <!-- CSRF token for security -->
-                    <input type="text" name="name" placeholder="Your Name" required>
-                    <input type="email" name="email" placeholder="Your Email Address" required>
-                    <input type="tel" name="phone" placeholder="Your Phone Number" required>
+                    <input type="text" name="name" value="{{ auth()->user()->name }}" required>
+                    <input type="email" name="email" value="{{ auth()->user()->email }}" required>
+                    <input type="tel" name="phone" value="{{ auth()->user()->phone }}" required>
                     <textarea name="message" placeholder="Your Message" required maxlength="255"></textarea>
                     <button type="submit">Send Message</button>
                 </form>

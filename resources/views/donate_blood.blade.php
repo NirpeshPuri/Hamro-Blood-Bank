@@ -177,7 +177,7 @@
         </button>
 
         <div id="adminResults" class="results-panel">
-            <h2>Nearby Blood Banks</h2>
+            <h2 >Nearby Blood Banks</h2>
             <div id="noResults" class="no-results" style="display: none;">
                 No blood banks found within 50km radius.
             </div>
@@ -191,7 +191,7 @@
                 <input type="hidden" id="adminId" name="admin_id">
                 <table class="form-table">
                     <tr>
-                        <td class="label-cell"><label>Blood Bank Name:</label></td>
+                        <td class="label-cell"><label>Blood Bank:</label></td>
                         <td>
                             <input type="text" class="form-input" id="adminNameDisplay" name="admin_name" readonly>
                         </td>
@@ -224,11 +224,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="label-cell"><label>Units Needed:</label></td>
+                        <td class="label-cell"><label>Blood Quantity:</label></td>
                         <td><input type="number" class="form-input" name="blood_quantity" min="1" max="2" required></td>
                     </tr>
                     <tr>
-                        <td class="label-cell"><label>Medical Form:</label></td>
+                        <td class="label-cell"><label>Donor Card:</label></td>
                         <td>
                             <input type="file" class="form-input" name="request_form" accept=".jpeg,.png,.pdf" required>
                             <small>Accepted formats: JPEG, PNG, PDF (Max 2MB)</small>
