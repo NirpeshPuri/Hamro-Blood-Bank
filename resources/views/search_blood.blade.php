@@ -324,7 +324,7 @@
                                     @if($userBloodType)
                                         Your blood type: {{ $userBloodType }} (showing compatible types)
                                     @else
-                                        Please set your blood type in your profile
+                                        Please set your blood type in your profile....
                                     @endif
                                 </small>
                             </td>
@@ -332,7 +332,7 @@
                         <tr>
                             <td><label for="blood_quantity">Blood Quantity (Units):</label></td>
                             <td>
-                                <input type="number" id="blood_quantity" name="blood_quantity" min="1" max="2" required>
+                                <input type="number" id="blood_quantity" name="blood_quantity" min="1" max="5" required>
                             </td>
                         </tr>
                         <tr>
@@ -343,6 +343,9 @@
                                     <option value="Rare" id="rareOption" disabled>Rare (select rare blood type first)</option>
                                     <option value="Normal" selected>Normal</option>
                                 </select>
+                                <small class="text-muted">
+                                        Rare Blood Type are (AB-, B-, A-)
+                                </small>
                             </td>
                         </tr>
                         <tr>

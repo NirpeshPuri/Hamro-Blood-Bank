@@ -58,7 +58,7 @@ class BloodSearchController extends Controller
         $request->validate([
             'admin_id' => 'required|exists:admins,id',
             'blood_group' => 'required|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
-            'blood_quantity' => 'required|integer|min:1|max:2',
+            'blood_quantity' => 'required|integer|min:1|max:5',
             'request_type' => [
                 'required',
                 Rule::in(['Emergency', 'Normal', 'Rare']),
