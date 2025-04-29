@@ -6,6 +6,7 @@ use App\Models\BloodRequest;
 use App\Models\DonateBlood;
 use App\Models\BloodBank;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
@@ -116,8 +117,18 @@ class RequestController extends Controller
 
     public function history()
     {
-        $requests = BloodRequest::with(['user', 'admin'])->get();
-        $donations = DonateBlood::with(['user', 'admin'])->get();
+        // Get the currently logged-in admin
+        $admin = Auth::guard('admin')->user();
+
+        // Get only requests assigned to this admin
+        $requests = BloodRequest::with(['user', 'admin'])
+            ->where('admin_id', $admin->id)
+            ->get();
+
+        // Get only donations assigned to this admin
+        $donations = DonateBlood::with(['user', 'admin'])
+            ->where('admin_id', $admin->id)
+            ->get();
 
         $combinedHistory = collect();
 
@@ -134,7 +145,8 @@ class RequestController extends Controller
                 'request_type' => $request->request_type,
                 'status' => $request->status,
                 'created_at' => $request->created_at,
-                'payment' => $request->payment
+                'payment' => $request->payment,
+                'admin_id' => $request->admin_id // Include admin_id for reference
             ]);
         }
 
@@ -150,7 +162,8 @@ class RequestController extends Controller
                 'blood_quantity' => $donation->blood_quantity,
                 'status' => $donation->status,
                 'donation_date' => $donation->donation_date,
-                'created_at' => $donation->created_at
+                'created_at' => $donation->created_at,
+                'admin_id' => $donation->admin_id // Include admin_id for reference
             ]);
         }
 

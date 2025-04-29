@@ -88,7 +88,7 @@
                 <div class="form-group">
                     <label for="current_password">{{ __('Current Password') }}</label>
                     <input id="current_password" type="password" class="@error('current_password') is-invalid @enderror"
-                           name="current_password" required>
+                           name="current_password"  required>
                     @error('current_password')
                     <span class="error-message">{{ $message }}</span>
                     @enderror

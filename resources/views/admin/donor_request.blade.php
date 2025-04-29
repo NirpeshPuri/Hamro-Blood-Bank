@@ -139,7 +139,7 @@
         }
 
         .user-contact {
-            font-size: 13px;
+            font-size: 16px;
             color: #6C757D;
         }
 
@@ -211,6 +211,7 @@
                 </thead>
                 <tbody>
                 @forelse($requests as $request)
+                    @if($request->admin_id == Auth::guard('admin')->id())
                     <tr>
                         <td>
                             <div class="user-info">
@@ -252,10 +253,12 @@
                             </form>
                         </td>
                     </tr>
+                    @endif
                 @empty
                     <tr>
                         <td colspan="7" class="no-requests">No donor requests found</td>
                     </tr>
+
                 @endforelse
                 </tbody>
             </table>

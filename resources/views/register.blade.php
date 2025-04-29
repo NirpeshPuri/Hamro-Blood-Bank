@@ -60,7 +60,7 @@
             <div class="register-form">
                 <form action="{{ route('register') }}" method="POST">
                     @csrf
-                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Full Name" required>
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="User Name" required>
                     @error('name') <div class="error-message">{{ $message }}</div> @enderror
 
                     <input type="number" name="age" value="{{ old('age') }}" placeholder="Age (Above 16)" required>

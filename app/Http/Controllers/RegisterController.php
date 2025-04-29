@@ -25,7 +25,12 @@ class RegisterController extends Controller
             'blood_type' => ['required', 'string'],
             'user_type' => ['required', 'in:receiver,donor'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => [
+                'required',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/'
+
+            ],
         ], [
             'name.regex' => 'Name must start with letters and may end with numbers.',
             'age.min' => 'Age must be between 16 and 65.',
@@ -33,8 +38,9 @@ class RegisterController extends Controller
             'address.regex' => 'Address must contain alphabets and can include numbers, spaces, commas, apostrophes, and hyphens.',
             'phone.digits' => 'Phone number must be exactly 10 digits.',
             'email.email' => 'Please enter a valid email address.',
+            'password.regex' => 'Password must contain at least 6 characters with one uppercase letter, one lowercase letter, one number and one special character'
         ]);
-        
+
         // Create a new user
          User::create([
             'name' => $request->name,

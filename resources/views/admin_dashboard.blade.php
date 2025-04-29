@@ -139,7 +139,7 @@
         }
 
         .user-contact {
-            font-size: 13px;
+            font-size: 16px;
             color: #6C757D;
         }
 
@@ -238,76 +238,78 @@
             </tr>
             </thead>
             <tbody>
-            @forelse($requests as $request)
-                @php
-                    // Determine styling based on request_type
-                    switch($request->request_type) {
-                        case 'Emergency':
-                            $rowClass = 'emergency-row';
-                            $badgeClass = 'badge-emergency';
-                            $typeText = 'Emergency';
-                            break;
-                        case 'Rare':
-                            $rowClass = 'rare-row';
-                            $badgeClass = 'badge-rare';
-                            $typeText = 'Rare';
-                            break;
-                        default: // normal
-                            $rowClass = 'normal-row';
-                            $badgeClass = 'badge-normal';
-                            $typeText = 'Normal';
-                    }
-                @endphp
-                <tr class="{{ $rowClass }}">
-                    <td>
-                        <div class="user-info">
-                            <span class="user-name">{{ $request->user_name }}</span>
-                            <span class="user-contact">{{ $request->email }}</span>
-                            <span class="user-contact">{{ $request->phone }}</span>
-                        </div>
-                    </td>
-                    <td>{{ $request->blood_group }}</td>
-                    <td>{{ $request->blood_quantity }} units</td>
-                    <td>
-                        <span class="type-badge {{ $badgeClass }}">
-                            {{ $typeText }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge status-{{ $request->status }}">
-                            {{ ucfirst($request->status) }}
-                        </span>
-                    </td>
-                    <td>
-                        @if($request->request_form)
-                            <a href="{{ $request->file_url }}"
-                               target="_blank"
-                               class="btn-action btn-view">
-                                View
-                            </a>
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td>{{ $request->payment ? 'Rs '.number_format($request->payment, 2) : 'N/A' }}</td>
-                    <td>{{ $request->created_at->format('M d, Y') }}</td>
-                    <td>
-                        <form action="{{ route('admin.receiver.update-status', $request->id) }}" method="POST">
-                            @csrf
-                            <div class="action-buttons">
-                                <button type="submit" name="action" value="approve" class="btn-action btn-approve">
-                                    Approve
-                                </button>
-                                <button type="submit" name="action" value="reject" class="btn-action btn-reject">
-                                    Reject
-                                </button>
+            @forelse($requests as $requestItem)
+                @if($requestItem->admin_id == Auth::guard('admin')->id())
+                    @php
+                        // Determine styling based on request_type
+                        switch($requestItem->request_type) {
+                            case 'Emergency':
+                                $rowClass = 'emergency-row';
+                                $badgeClass = 'badge-emergency';
+                                $typeText = 'Emergency';
+                                break;
+                            case 'Rare':
+                                $rowClass = 'rare-row';
+                                $badgeClass = 'badge-rare';
+                                $typeText = 'Rare';
+                                break;
+                            default: // normal
+                                $rowClass = 'normal-row';
+                                $badgeClass = 'badge-normal';
+                                $typeText = 'Normal';
+                        }
+                    @endphp
+                    <tr class="{{ $rowClass }}">
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">{{ $requestItem->user_name }}</span>
+                                <span class="user-contact">{{ $requestItem->email }}</span>
+                                <span class="user-contact">{{ $requestItem->phone }}</span>
                             </div>
-                        </form>
-                    </td>
-                </tr>
+                        </td>
+                        <td>{{ $requestItem->blood_group }}</td>
+                        <td>{{ $requestItem->blood_quantity }} units</td>
+                        <td>
+                <span class="type-badge {{ $badgeClass }}">
+                    {{ $typeText }}
+                </span>
+                        </td>
+                        <td>
+                <span class="status-badge status-{{ $requestItem->status }}">
+                    {{ ucfirst($requestItem->status) }}
+                </span>
+                        </td>
+                        <td>
+                            @if($requestItem->request_form)
+                                <a href="{{ $requestItem->file_url }}"
+                                   target="_blank"
+                                   class="btn-action btn-view">
+                                    View
+                                </a>
+                            @else
+                                N/A
+                            @endif
+                        </td>
+                        <td>{{ $requestItem->payment ? 'Rs '.number_format($requestItem->payment, 2) : 'N/A' }}</td>
+                        <td>{{ $requestItem->created_at->format('M d, Y') }}</td>
+                        <td>
+                            <form action="{{ route('admin.receiver.update-status', $requestItem->id) }}" method="POST">
+                                @csrf
+                                <div class="action-buttons">
+                                    <button type="submit" name="action" value="approve" class="btn-action btn-approve">
+                                        Approve
+                                    </button>
+                                    <button type="submit" name="action" value="reject" class="btn-action btn-reject">
+                                        Reject
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                @endif
             @empty
                 <tr>
-                    <td colspan="9" class="no-requests">No blood requests found</td>
+                    <td colspan="9" class="no-requests">No blood requests assigned to you</td>
                 </tr>
             @endforelse
             </tbody>

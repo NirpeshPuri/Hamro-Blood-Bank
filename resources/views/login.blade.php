@@ -65,6 +65,11 @@
         .form-group {
             margin-bottom: 1rem;
         }
+        .alert-success {
+            background-color: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
     </style>
 
     <section class="login-section fade-in">
@@ -72,6 +77,11 @@
             <h2>Login</h2>
             <div class="login-form">
                 <!-- Error Message Container -->
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 @if($errors->any())
                     <div class="alert alert-danger">
                         @foreach($errors->all() as $error)

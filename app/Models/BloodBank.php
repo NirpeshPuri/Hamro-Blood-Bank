@@ -31,6 +31,8 @@ class BloodBank extends Model
     {
         return ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
     }
+    public $timestamps = false;
+
 
     public function admin()
     {

@@ -28,7 +28,7 @@ class ProfileUpdateController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name' => ['required', 'regex:/^[A-Za-z]+[A-Za-z0-9]*$/', 'max:25'],
+            'name' => ['required', 'regex:/^[A-Za-z]{4,}[A-Za-z0-9 ]*$/', 'max:25'],
             'age' => ['required', 'integer', 'min:16', 'max:65'],
             'weight' => ['required', 'numeric', 'min:45', 'max:160'],
             'address' => ['required', 'regex:/^[A-Za-z0-9\s,\'.-]+$/', 'regex:/[A-Za-z]/', 'max:30'],
@@ -39,12 +39,13 @@ class ProfileUpdateController extends Controller
                 'email',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'current_password' => ['required', 'string', function ($attribute, $value, $fail) use ($user) {
+            'current_password' => ['required', function ($attribute, $value, $fail) use ($user) {
                 if (!Hash::check($value, $user->password)) {
                     $fail('The current password is incorrect.');
                 }
             }],
-            'new_password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'new_password' => ['nullable', 'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/'],
         ], [
             'name.regex' => 'Name must start with letters and may end with numbers.',
             'age.min' => 'Age must be between 16 and 65.',
@@ -54,6 +55,8 @@ class ProfileUpdateController extends Controller
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email is already taken.',
             'blood_type.in' => 'Please select a valid blood type.',
+            'new_password.regex' => 'Password must contain at least 6 characters with one uppercase letter, one lowercase letter, one number and one special character'
+
         ]);
 
         $updateData = [

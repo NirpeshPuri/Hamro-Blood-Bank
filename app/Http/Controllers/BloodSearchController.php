@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\BloodRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class BloodSearchController extends Controller
 {
@@ -58,7 +59,16 @@ class BloodSearchController extends Controller
             'admin_id' => 'required|exists:admins,id',
             'blood_group' => 'required|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
             'blood_quantity' => 'required|integer|min:1|max:2',
-            'request_type' => 'required|in:Emergency,Rare,Normal',
+            'request_type' => [
+                'required',
+                Rule::in(['Emergency', 'Normal', 'Rare']),
+                function ($attribute, $value, $fail) use ($request) {
+                    $rareBloodTypes = ['AB-', 'B-', 'A-'];
+                    if ($value === 'Rare' && !in_array($request->blood_group, $rareBloodTypes)) {
+                        $fail('Rare request type can only be selected for rare blood types (AB-, B-, A-)');
+                    }
+                }
+            ],
             'request_form' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'payment' => 'required|numeric|min:0|max:1500',
         ]);

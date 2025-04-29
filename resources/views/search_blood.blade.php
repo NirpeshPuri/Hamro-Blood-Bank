@@ -284,19 +284,49 @@
                             <td><label for="user_phone">Phone:</label></td>
                             <td><input type="text" id="user_phone" name="user_phone" value="{{ auth()->user()->phone }}" disabled></td>
                         </tr>
+                        <!-- In your form section -->
                         <tr>
                             <td><label for="blood_group">Blood Group:</label></td>
                             <td>
-                                <select id="blood_group" name="blood_group" required>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
+                                <select id="blood_group" name="blood_group" required onchange="checkBloodType()">
+                                    @php
+                                        $userBloodType = auth()->user()->blood_type;
+                                        // Define rare blood types
+                                        $rareBloodTypes = ['AB-', 'B-', 'A-'];
+
+                                        $compatibleTypes = [
+                                            'A+' => ['A+', 'A-', 'O+', 'O-'],
+                                            'A-' => ['A-', 'O-'],
+                                            'B+' => ['B+', 'B-', 'O+', 'O-'],
+                                            'B-' => ['B-', 'O-'],
+                                            'AB+' => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                                            'AB-' => ['A-', 'B-', 'AB-', 'O-'],
+                                            'O+' => ['O+', 'O-'],
+                                            'O-' => ['O-']
+                                        ];
+
+                                        $allowedTypes = $compatibleTypes[$userBloodType] ?? [
+                                            'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+                                        ];
+                                    @endphp
+
+                                    @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
+                                        @if(in_array($type, $allowedTypes))
+                                            <option value="{{ $type }}"
+                                                    {{ $type == $userBloodType ? 'selected' : '' }}
+                                                    data-is-rare="{{ in_array($type, $rareBloodTypes) ? 'true' : 'false' }}">
+                                                {{ $type }}
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
+                                <small class="text-muted">
+                                    @if($userBloodType)
+                                        Your blood type: {{ $userBloodType }} (showing compatible types)
+                                    @else
+                                        Please set your blood type in your profile
+                                    @endif
+                                </small>
                             </td>
                         </tr>
                         <tr>
@@ -310,8 +340,8 @@
                             <td>
                                 <select id="request_type" name="request_type" required>
                                     <option value="Emergency">Emergency</option>
-                                    <option value="Rare">Rare</option>
-                                    <option value="Normal">Normal</option>
+                                    <option value="Rare" id="rareOption" disabled>Rare (select rare blood type first)</option>
+                                    <option value="Normal" selected>Normal</option>
                                 </select>
                             </td>
                         </tr>
@@ -440,6 +470,42 @@
                     }
                 });
             });
+        });
+
+
+
+
+        function checkBloodType() {
+            const bloodGroupSelect = document.getElementById('blood_group');
+            const selectedOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
+            const isRare = selectedOption.getAttribute('data-is-rare') === 'true';
+            const rareOption = document.getElementById('rareOption');
+            const requestTypeSelect = document.getElementById('request_type');
+
+            if (isRare) {
+                // Enable the Rare option
+                rareOption.disabled = false;
+                rareOption.textContent = 'Rare';
+
+                // If current selection is disabled, switch to Normal
+                if (requestTypeSelect.value === 'Rare' && rareOption.disabled) {
+                    requestTypeSelect.value = 'Normal';
+                }
+            } else {
+                // Disable Rare option and switch to Normal if currently selected
+                rareOption.disabled = true;
+                if (requestTypeSelect.value === 'Rare') {
+                    requestTypeSelect.value = 'Normal';
+                }
+            }
+        }
+
+        // Initialize on page load and whenever blood group changes
+        document.addEventListener('DOMContentLoaded', function() {
+            checkBloodType();
+
+            // Also check when blood group changes
+            document.getElementById('blood_group').addEventListener('change', checkBloodType);
         });
     </script>
 @endsection
