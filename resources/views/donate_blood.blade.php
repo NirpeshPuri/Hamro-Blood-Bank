@@ -166,7 +166,7 @@
 
     <div class="donation-container">
         <h1 class="page-title">Blood Donation Request</h1>
-
+        <!--if donor is already donate then this message will show-->
         <div id="eligibilityMessage" class="eligibility-message">
             <h3>You cannot donate blood again until 3 months have passed since your last donation.</h3>
         </div>
