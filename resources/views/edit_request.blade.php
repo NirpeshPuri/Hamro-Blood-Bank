@@ -118,7 +118,7 @@
             }
         }
     </style>
-
+    <!-- Edit Receiver request-->
     <div class="edit-container">
         <h1 class="edit-header">Edit Blood Request</h1>
 
