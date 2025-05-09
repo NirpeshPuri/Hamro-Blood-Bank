@@ -22,7 +22,7 @@
             <div class="form-group">
                 <label for="blood_quantity">Units</label>
                 <input type="number" id="blood_quantity" name="blood_quantity"
-                       class="form-control" min="1" max="10"
+                       class="form-control" min="1" max="2"
                        value="{{ $donation->blood_quantity }}" required>
             </div>
 

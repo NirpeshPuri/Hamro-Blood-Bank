@@ -122,19 +122,51 @@
     <div class="edit-container">
         <h1 class="edit-header">Edit Blood Request</h1>
 
-        <form class="edit-form" action="{{ route('receiver.request.update', $request->id) }}" method="POST" enctype="multipart/form-data">
+        <form class="edit-form" action="{{ route('receiver.request.update', $request->id) }}" method="POST" enctype="multipart/form-data" onsubmit="return validateRequestType()">
             @csrf
             @method('PUT')
 
             <div class="form-group">
                 <label for="blood_group">Blood Group</label>
-                <select id="blood_group" name="blood_group" class="form-control" required>
-                    @foreach(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $group)
-                        <option value="{{ $group }}" {{ $request->blood_group == $group ? 'selected' : '' }}>
-                            {{ $group }}
-                        </option>
+                <select id="blood_group" name="blood_group" class="form-control" required onchange="checkBloodType()">
+                    @php
+                        $userBloodType = auth()->user()->blood_type;
+                        // Define rare blood types
+                        $rareBloodTypes = ['AB-', 'B-', 'A-'];
+
+                        $compatibleTypes = [
+                            'A+' => ['A+', 'A-', 'O+', 'O-'],
+                            'A-' => ['A-', 'O-'],
+                            'B+' => ['B+', 'B-', 'O+', 'O-'],
+                            'B-' => ['B-', 'O-'],
+                            'AB+' => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                            'AB-' => ['A-', 'B-', 'AB-', 'O-'],
+                            'O+' => ['O+', 'O-'],
+                            'O-' => ['O-']
+                        ];
+
+                        $allowedTypes = $compatibleTypes[$userBloodType] ?? [
+                            'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+                        ];
+                    @endphp
+
+                    @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
+                        @if(in_array($type, $allowedTypes))
+                            <option value="{{ $type }}"
+                                    {{ $type == $request->blood_group ? 'selected' : '' }}
+                                    data-is-rare="{{ in_array($type, $rareBloodTypes) ? 'true' : 'false' }}">
+                                {{ $type }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
+                <small class="text-muted">
+                    @if($userBloodType)
+                        Your blood type: {{ $userBloodType }} (showing compatible types)
+                    @else
+                        Please set your blood type in your profile
+                    @endif
+                </small>
             </div>
 
             <div class="form-group">
@@ -147,9 +179,15 @@
                 <label for="request_type">Request Type</label>
                 <select id="request_type" name="request_type" class="form-control" required>
                     <option value="Emergency" {{ $request->request_type == 'Emergency' ? 'selected' : '' }}>Emergency</option>
-                    <option value="Rare" {{ $request->request_type == 'Rare' ? 'selected' : '' }}>Rare</option>
+                    <option value="Rare" id="rareOption" {{ $request->request_type == 'Rare' ? 'selected' : '' }}
+                    @if(!in_array($request->blood_group, ['AB-', 'B-', 'A-'])) disabled @endif>
+                        Rare
+                    </option>
                     <option value="Normal" {{ $request->request_type == 'Normal' ? 'selected' : '' }}>Normal</option>
                 </select>
+                <small class="text-muted">
+                    Rare Blood Types are (AB-, B-, A-)
+                </small>
             </div>
 
             <div class="form-group">
@@ -177,4 +215,51 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function checkBloodType() {
+            const bloodGroupSelect = document.getElementById('blood_group');
+            const selectedOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
+            const isRare = selectedOption.getAttribute('data-is-rare') === 'true';
+            const rareOption = document.getElementById('rareOption');
+            const requestTypeSelect = document.getElementById('request_type');
+
+            if (isRare) {
+                // Enable the Rare option
+                rareOption.disabled = false;
+
+                // If current selection is disabled, switch to Normal
+                if (requestTypeSelect.value === 'Rare' && rareOption.disabled) {
+                    requestTypeSelect.value = 'Normal';
+                }
+            } else {
+                // Disable Rare option and switch to Normal if currently selected
+                rareOption.disabled = true;
+                if (requestTypeSelect.value === 'Rare') {
+                    requestTypeSelect.value = 'Normal';
+                }
+            }
+        }
+
+        function validateRequestType() {
+            const bloodGroupSelect = document.getElementById('blood_group');
+            const selectedBloodOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
+            const isRare = selectedBloodOption.getAttribute('data-is-rare') === 'true';
+            const requestType = document.getElementById('request_type').value;
+
+            if (requestType === 'Rare' && !isRare) {
+                alert('You can only select Rare request type for AB-, B-, or A- blood types');
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkBloodType();
+
+            // Also check when blood group changes
+            document.getElementById('blood_group').addEventListener('change', checkBloodType);
+        });
+    </script>
 @endsection

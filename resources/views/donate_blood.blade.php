@@ -162,9 +162,45 @@
                 width: 100%;
             }
         }
+
+        .donation-requirement-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745; /* Bootstrap success green */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 5px 0;
+        }
+
+        .donation-requirement-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        .donation-requirement-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* With icon version */
+        .donation-requirement-btn.with-icon::before {
+            content: "ℹ️";
+            margin-right: 8px;
+            font-size: 1rem;
+        }
     </style>
 
     <div class="donation-container">
+        <a href="{{url('donor_about')}}" class="donation-requirement-btn with-icon">To Know Donation Requirement?</a>
         <h1 class="page-title">Blood Donation Request</h1>
         <!--if donor is already donate then this message will show-->
         <div id="eligibilityMessage" class="eligibility-message">
