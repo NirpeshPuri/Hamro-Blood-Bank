@@ -27,14 +27,33 @@ class ReceiverStatusController extends Controller
             return redirect()->route('receiver.status')->with('error', 'Cannot edit this request.');
         }
 
+        $adminId = $request->admin_id;
+
+        // Fetch stock data from BloodBank model
+        $bloodBank = \App\Models\BloodBank::where('admin_id', $adminId)->first();
+        $stock = [
+            'A+' => $bloodBank->{'A+'} ?? 0,
+            'A-' => $bloodBank->{'A-'} ?? 0,
+            'B+' => $bloodBank->{'B+'} ?? 0,
+            'B-' => $bloodBank->{'B-'} ?? 0,
+            'AB+' => $bloodBank->{'AB+'} ?? 0,
+            'AB-' => $bloodBank->{'AB-'} ?? 0,
+            'O+' => $bloodBank->{'O+'} ?? 0,
+            'O-' => $bloodBank->{'O-'} ?? 0,
+        ];
+
         return view('edit_request', [
             'request' => $request,
-            'currentFileUrl' => $request->file_url
+            'currentFileUrl' => $request->file_url,
+            'adminId' => $adminId,
+            'stock' => $stock,
         ]);
     }
 
+
     public function update(Request $request, $id)
     {
+
         $bloodRequest = BloodRequest::where('user_id', Auth::id())->findOrFail($id);
 
         if (!$bloodRequest->canEdit()) {

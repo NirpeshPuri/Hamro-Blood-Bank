@@ -140,7 +140,7 @@
             }
         }
     </style>
-
+<!-- receiver status-->
     <div class="request-container">
         <h1 class="request-header">My Blood Requests</h1>
 
@@ -160,12 +160,13 @@
             <table class="request-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Blood Group</th>
                     <th>Quantity</th>
                     <th>Type</th>
                     <th>Status</th>
                     <th>Date</th>
+                    <th>Payment</th>
+                    <th>Payment Status</th>
                     <th>Form</th>
                     <th>Actions</th>
                 </tr>
@@ -173,7 +174,6 @@
                 <tbody>
                 @forelse($requests as $request)
                     <tr>
-                        <td>#{{ $request->id }}</td>
                         <td>{{ $request->blood_group }}</td>
                         <td>{{ $request->blood_quantity }} units</td>
                         <td>{{ $request->request_type }}</td>
@@ -183,6 +183,12 @@
                             </span>
                         </td>
                         <td>{{ $request->created_at->format('M d, Y H:i') }}</td>
+                        <td>
+                            {{ $request->payment }}
+                        </td>
+                        <td>
+                            {{ $request->payment_status }}
+                        </td>
                         <td>
                             @if($request->request_form)
                                 <a href="{{ $request->file_url }}"

@@ -2,6 +2,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Edit Request')
 @section('content')
+
     <style>
         .edit-container {
             max-width: 800px;
@@ -118,22 +119,22 @@
             }
         }
     </style>
-    <!-- Edit Receiver request-->
+
     <div class="edit-container">
         <h1 class="edit-header">Edit Blood Request</h1>
 
-        <form class="edit-form" action="{{ route('receiver.request.update', $request->id) }}" method="POST" enctype="multipart/form-data" onsubmit="return validateRequestType()">
+        <form class="edit-form" action="{{ route('receiver.request.update', $request->id) }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             @csrf
             @method('PUT')
 
+            <input type="hidden" id="adminId" name="admin_id" value="{{ $adminId }}">
+
             <div class="form-group">
                 <label for="blood_group">Blood Group</label>
-                <select id="blood_group" name="blood_group" class="form-control" required onchange="checkBloodType()">
+                <select id="blood_group" name="blood_group" class="form-control" required onchange="handleBloodGroupChange()">
                     @php
-                        $userBloodType = auth()->user()->blood_type;
-                        // Define rare blood types
+                        $userBloodType = auth()->user()->blood_type ?? null;
                         $rareBloodTypes = ['AB-', 'B-', 'A-'];
-
                         $compatibleTypes = [
                             'A+' => ['A+', 'A-', 'O+', 'O-'],
                             'A-' => ['A-', 'O-'],
@@ -144,10 +145,7 @@
                             'O+' => ['O+', 'O-'],
                             'O-' => ['O-']
                         ];
-
-                        $allowedTypes = $compatibleTypes[$userBloodType] ?? [
-                            'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
-                        ];
+                        $allowedTypes = $compatibleTypes[$userBloodType] ?? array_keys($compatibleTypes);
                     @endphp
 
                     @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
@@ -171,8 +169,7 @@
 
             <div class="form-group">
                 <label for="blood_quantity">Quantity (Units)</label>
-                <input type="number" id="blood_quantity" name="blood_quantity"
-                       min="1" value="{{ $request->blood_quantity }}" required>
+                <input type="number" id="blood_quantity" name="blood_quantity" min="1" value="{{ $request->blood_quantity }}" readonly>
             </div>
 
             <div class="form-group">
@@ -180,27 +177,24 @@
                 <select id="request_type" name="request_type" class="form-control" required>
                     <option value="Emergency" {{ $request->request_type == 'Emergency' ? 'selected' : '' }}>Emergency</option>
                     <option value="Rare" id="rareOption" {{ $request->request_type == 'Rare' ? 'selected' : '' }}
-                    @if(!in_array($request->blood_group, ['AB-', 'B-', 'A-'])) disabled @endif>
+                    @if(!in_array($request->blood_group, $rareBloodTypes)) disabled @endif>
                         Rare
                     </option>
                     <option value="Normal" {{ $request->request_type == 'Normal' ? 'selected' : '' }}>Normal</option>
                 </select>
-                <small class="text-muted">
-                    Rare Blood Types are (AB-, B-, A-)
-                </small>
+                <small class="text-muted">Rare Blood Types are (AB-, B-, A-)</small>
             </div>
 
             <div class="form-group">
                 <label for="payment">Payment Amount (NPR)</label>
-                <input type="number" id="payment" name="payment"
-                       min="0" step="0.01" value="{{ $request->payment }}" required>
+                <input type="number" id="payment" name="payment" min="0" step="0.01" value="{{ $request->payment }}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="request_form">Hospital Form (Proof)</label>
                 <input type="file" id="request_form" name="request_form">
 
-                @if($currentFileUrl)
+                @if(!empty($currentFileUrl))
                     <div class="file-info">
                         <p>Current file: <a href="{{ $currentFileUrl }}" target="_blank">View Full Size</a></p>
                         <img src="{{ $currentFileUrl }}" alt="Current hospital form" class="current-file-image">
@@ -217,49 +211,71 @@
     </div>
 
     <script>
-        function checkBloodType() {
+        // Stock data passed from backend (controller)
+        const stock = @json($stock);
+
+        function handleBloodGroupChange() {
             const bloodGroupSelect = document.getElementById('blood_group');
             const selectedOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
             const isRare = selectedOption.getAttribute('data-is-rare') === 'true';
+
             const rareOption = document.getElementById('rareOption');
             const requestTypeSelect = document.getElementById('request_type');
 
+            // Enable/disable Rare option based on blood group
             if (isRare) {
-                // Enable the Rare option
                 rareOption.disabled = false;
-
-                // If current selection is disabled, switch to Normal
-                if (requestTypeSelect.value === 'Rare' && rareOption.disabled) {
-                    requestTypeSelect.value = 'Normal';
-                }
             } else {
-                // Disable Rare option and switch to Normal if currently selected
                 rareOption.disabled = true;
                 if (requestTypeSelect.value === 'Rare') {
                     requestTypeSelect.value = 'Normal';
                 }
             }
+
+            checkQuantityAgainstStock();
         }
 
-        function validateRequestType() {
+        function checkQuantityAgainstStock() {
+            const bloodGroup = document.getElementById('blood_group').value;
+            const quantity = parseInt(document.getElementById('blood_quantity').value);
+            const available = stock[bloodGroup] || 0;
+
+            if (quantity > available) {
+                alert(`Only ${available} units of ${bloodGroup} blood available. Please adjust your request or choose a compatible type.`);
+                document.getElementById('blood_quantity').classList.add('is-invalid');
+            } else {
+                document.getElementById('blood_quantity').classList.remove('is-invalid');
+            }
+        }
+
+        function validateForm() {
             const bloodGroupSelect = document.getElementById('blood_group');
-            const selectedBloodOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
-            const isRare = selectedBloodOption.getAttribute('data-is-rare') === 'true';
+            const selectedOption = bloodGroupSelect.options[bloodGroupSelect.selectedIndex];
+            const isRare = selectedOption.getAttribute('data-is-rare') === 'true';
             const requestType = document.getElementById('request_type').value;
 
             if (requestType === 'Rare' && !isRare) {
-                alert('You can only select Rare request type for AB-, B-, or A- blood types');
+                alert('You can only select Rare request type for AB-, B-, or A- blood types.');
                 return false;
             }
+
+            // Final stock validation
+            const selectedGroup = bloodGroupSelect.value;
+            const quantity = parseInt(document.getElementById('blood_quantity').value);
+            if (quantity > (stock[selectedGroup] || 0)) {
+                alert(`Insufficient stock for ${selectedGroup}.`);
+                return false;
+            }
+
             return true;
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            checkBloodType();
+        document.addEventListener('DOMContentLoaded', () => {
+            handleBloodGroupChange();
 
-            // Also check when blood group changes
-            document.getElementById('blood_group').addEventListener('change', checkBloodType);
+            document.getElementById('blood_group').addEventListener('change', handleBloodGroupChange);
         });
     </script>
+
 @endsection

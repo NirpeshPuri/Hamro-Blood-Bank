@@ -4,7 +4,7 @@
     <div class="update-section">
         <div class="update-form">
             <div class="card-header">{{ __('Update Profile') }}</div>
-
+            <!-- Receiver profile update -->
             @if(session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}

@@ -53,7 +53,7 @@
     @error('field')
     <div class="error-message">{{ $message }}</div>
     @enderror
-
+    <!-- Register -->
     <section class="register-section fade-in">
         <div class="container">
             <h2>Register</h2>

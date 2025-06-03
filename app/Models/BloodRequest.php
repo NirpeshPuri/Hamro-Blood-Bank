@@ -20,7 +20,10 @@ class BloodRequest extends Model
         'request_type',
         'status',
         'request_form',
-        'payment'
+        'payment',
+        'payment_status',
+        'transaction_id'
+
     ];
 
     protected $attributes = [

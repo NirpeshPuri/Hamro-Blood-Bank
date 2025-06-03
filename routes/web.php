@@ -112,19 +112,12 @@ Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])-
 
 
 use App\Http\Controllers\EsewaController;
-Route::get('/esewa_payment', function () {
-    return view('esewa_payment');
-});
 
-Route::post('/esewa', [EsewaController::class, 'esewaPay'])->name('esewa');
-Route::get('/success', [EsewaController::class, 'esewaPaySuccess'])->name('esewa.success');
-Route::get('/failure', [EsewaController::class, 'esewaPayFailed'])->name('esewa.failure');
 
 
 use App\Http\Controllers\ReceiverStatusController;
 
 Route::middleware(['auth'])->group(function () {
-    // Receiver status routes
     Route::get('/receiver/status', [ReceiverStatusController::class, 'index'])
         ->name('receiver.status');
     Route::get('/receiver/request/{id}/edit', [ReceiverStatusController::class, 'edit'])
@@ -138,11 +131,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/receiver_update_profile', [ProfileUpdateController::class, 'update']);
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    // Blood Search Routes
+    Route::get('/search-blood', [BloodSearchController::class, 'index'])->name('search.blood');
+    Route::post('/find-nearby-admins', [BloodSearchController::class, 'findNearbyAdmins'])->name('find.nearby.admins');
+    Route::post('/submit-request', [BloodSearchController::class, 'submitRequest'])->name('submit.blood.request');
 
-
+    // Blood Stock Check
     Route::get('/blood-banks/{adminId}/stock', function($adminId) {
         $bloodBank = App\Models\BloodBank::where('admin_id', $adminId)->firstOrFail();
-
         return response()->json([
             'A+' => $bloodBank->{'A+'} ?? 0,
             'A-' => $bloodBank->{'A-'} ?? 0,
@@ -154,6 +150,22 @@ Route::middleware(['auth'])->group(function () {
             'O-' => $bloodBank->{'O-'} ?? 0
         ]);
     });
+
+    // Payment Processing Routes
+    // Remove duplicate routes and keep only these:
+    Route::get('/payment', [BloodSearchController::class, 'showPaymentPage'])->name('payment.page');
+    Route::post('/process-payment', [BloodSearchController::class, 'processPayment'])->name('process.payment');
+    Route::get('/process-esewa-payment', [BloodSearchController::class, 'processEsewaPayment'])->name('process.esewa.payment');
+    Route::get('/payment/success', [BloodSearchController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('/payment/failure', [BloodSearchController::class, 'paymentFailure'])->name('payment.failure');
+
+
+
+
+    // eSewa Payment Routes (if using separate controller)
+    Route::post('/esewa-pay', [EsewaController::class, 'esewaPay'])->name('esewa.pay');
+    Route::get('/esewa-success', [EsewaController::class, 'esewaPaySuccess'])->name('esewa.success');
+    Route::get('/esewa-failure', [EsewaController::class, 'esewaPayFailed'])->name('esewa.failure');
 });
 
 
@@ -197,5 +209,13 @@ Route::prefix('blood-banks')->middleware('auth:admin')->group(function () {
 
 
 
+Route::get('/payment', [BloodSearchController::class, 'showPaymentPage'])->name('payment.page');
+Route::post('/process-payment', [BloodSearchController::class, 'processEsewaPayment'])->name('process.payment');
+Route::get('/payment/success', [BloodSearchController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/failure', [BloodSearchController::class, 'paymentFailure'])->name('payment.failure');
 
 
+
+Route::get('/test', function () {
+    return view('test');
+});

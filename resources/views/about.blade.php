@@ -80,7 +80,7 @@
         }
     </style>
 
-    <!-- About Section -->
+    <!--About Page-->
     <section class="about-section fade-in">
         <div class="container">
             <h2>About Hamro Blood Bank</h2>

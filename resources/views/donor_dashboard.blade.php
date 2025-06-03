@@ -10,7 +10,7 @@
         </div>
     </section>
 
-    <!-- Statistics Section -->
+    <!-- Donor Dashboard -->
     <section class="statistics-section fade-in">
         <div class="container">
             <h2>Our Impact</h2>
