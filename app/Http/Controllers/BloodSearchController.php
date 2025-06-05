@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
+//Update BloodSearchController
 class BloodSearchController extends Controller
 {
     public function index()
