@@ -1,6 +1,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Payment Failed')
 @section('content')
+    <!--Payment Failure-->
     <div class="payment-failure-container">
         <div class="payment-failure-card">
             <div class="payment-failure-header">
