@@ -1,6 +1,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Payment Successful')
 @section('content')
+    <!--Payment Success-->
     <style>
         .payment-success-container {
             display: flex;
