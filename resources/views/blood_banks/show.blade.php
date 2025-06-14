@@ -106,7 +106,7 @@
             }
         }
     </style>
-
+    <!--Show blood bank-->
     <div class="bloodbank-container">
         <h1 class="bloodbank-title">Blood Bank Stock</h1>
 
