@@ -1,6 +1,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Update Profile')
 @section('content')
+    <!--Receiver update Profile-->
     <div class="update-section">
         <div class="update-form">
             <div class="card-header">{{ __('Update Profile') }}</div>
