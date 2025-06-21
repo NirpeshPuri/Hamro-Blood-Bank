@@ -1,6 +1,7 @@
 @extends('layouts.donor_master')
 @section('title', 'Update Profile')
 @section('content')
+    <!--Donor update Profile-->
     <div class="update-section">
         <div class="update-form">
             <div class="card-header">{{ __('Update Profile') }}</div>
