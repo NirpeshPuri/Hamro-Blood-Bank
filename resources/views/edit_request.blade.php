@@ -2,7 +2,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Edit Request')
 @section('content')
-
+    <!--Edit Request-->
     <style>
         .edit-container {
             max-width: 800px;
