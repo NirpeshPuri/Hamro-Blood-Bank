@@ -1,7 +1,7 @@
 @extends('layouts.receiver_master')
 @section('title', 'Home')
 @section('content')
-    <!-- Hero Section -->
+    <!-- Receiver Dashboard -->
     <section class="hero-section fade-in">
         <div class="hero-content">
             <h1>Save Lives, Donate Blood</h1>
